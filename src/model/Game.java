@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 
 public class Game {
-    public static int cellSize = 32;
+    public static int cellSize = 48;
     
     private int activePlayerIndex;
     private final Player[] players;

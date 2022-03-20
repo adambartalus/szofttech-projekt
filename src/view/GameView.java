@@ -24,7 +24,7 @@ public class GameView {
 
     public GameView() {
         
-        game = new Game(new Dimension(20, 12));
+        game = new Game(new Dimension(18, 10));
         
         frame = new JFrame();
         frame.setLayout(new BorderLayout(0, 5));

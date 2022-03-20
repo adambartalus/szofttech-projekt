@@ -20,13 +20,13 @@ public class GameArea extends JPanel{
     private final int FPS = 120;
     private final Timer timer;
     
-    private Image bg;
+    private Image grass_tile;
     
     public GameArea(Game game) {
         
         this.game = game;
         try {
-            bg = ResourceLoader.loadImage("res/bg.jpg");
+            grass_tile = ResourceLoader.loadImage("res/grass_tile.png");
         } catch(Exception e) {
             
         }
@@ -46,8 +46,18 @@ public class GameArea extends JPanel{
         Graphics2D g2 = (Graphics2D) g;
         Dimension d = this.game.getMapDimension();
         
-        g2.drawImage(bg, 0, 0, (int)d.getWidth() * Game.cellSize, (int)d.getHeight() * Game.cellSize, null);
-        
+        for(int i = 0; i < d.getWidth(); i++) {
+            for(int j = 0; j < d.getHeight(); j++) {
+                g2.drawImage(
+                    grass_tile,
+                    i*Game.cellSize,
+                    j*Game.cellSize,
+                    Game.cellSize,
+                    Game.cellSize,
+                    null
+                );
+            }
+        }
         //drawing units
         for(Unit u : this.game.getUnits()) {
             g2.setColor(Color.red);
