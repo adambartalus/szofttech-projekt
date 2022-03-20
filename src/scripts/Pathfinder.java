@@ -31,6 +31,18 @@ public class Pathfinder (Pair start, Pair end, Pair current, int [][] map){
             board[currentX-1][currentY].setAt0(abs(startPos.getKey()-(currentX-1))+abs(startPos.getValue()-(currentY)));
             board[currentX-1][currentY].setAt1("r");
         }//Check left
+        if(board[currentX][currentY+1].getKey()!=1000){
+            board[currentX][currentY+1].setAt0(abs(startPos.getKey()-(currentX))+abs(startPos.getValue()-(currentY+1)));
+            board[currentX][currentY+1].setAt1("b");
+        }//Check up
+        if(board[currentX+1][currentY].getKey()!=1000){
+            board[currentX+1][currentY].setAt0(abs(startPos.getKey()-(currentX+1))+abs(startPos.getValue()-(currentY)));
+            board[currentX+1][currentY].setAt1("l");
+        }//Check right
+        if(board[currentX][currentY-1].getKey()!=1000){
+            board[currentX][currentY-1].setAt0(abs(startPos.getKey()-(currentX))+abs(startPos.getValue()-(currentY-1)));
+            board[currentX][currentY-1].setAt1("b");
+        }//Check up
     }
 
     
