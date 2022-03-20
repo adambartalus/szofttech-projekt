@@ -14,6 +14,10 @@ public class Unit {
         this.hp = hp;
     }
     
+    public Position getPosition() {
+        return this.position;
+    }
+    
     public void takeDamage(int v) {
         this.hp -= v;
     }
