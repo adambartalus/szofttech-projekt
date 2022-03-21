@@ -13,13 +13,19 @@ public class Game {
     private final Dimension mapDimension;
 
     public Game(Dimension d) {
-        this.players = new Player[]{new Player(), new Player()};
+        this.players = new Player[]{
+            new Player(new Position(1, d.width / 2 + 1)),
+            new Player(new Position(d.height - 2, d.width / 2 - 1))};
         this.units = new ArrayList<>();
         this.mapDimension = d;
     }
     
     public Player getActivePlayer() {
         return this.players[activePlayerIndex];
+    }
+    
+    public Player getPlayer(int i) { // not final solution
+        return players[i];
     }
     
     public Dimension getMapDimension() {

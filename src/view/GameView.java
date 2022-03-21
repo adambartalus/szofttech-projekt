@@ -38,7 +38,7 @@ public class GameView {
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameView.this.game.addUnit(new StrongUnit(new Position(1, 1)));
+                GameView.this.game.addUnit(new StrongUnit(game.getActivePlayer().getCastlePosition()));
             }
         });
         b.setPreferredSize(new Dimension(160,30));

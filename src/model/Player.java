@@ -6,10 +6,12 @@ import java.util.ArrayList;
 public class Player {
     
     private int gold;
-    ArrayList<Unit> units;
+    private Castle castle;
+    private ArrayList<Unit> units;
 
-    public Player() {
+    public Player(Position castlePos) {
         this.gold = 1000;
+        this.castle = new Castle(castlePos);
         this.units = new ArrayList<>();
     }
 
@@ -33,5 +35,9 @@ public class Player {
     }
     public void removeUnit(Unit u) {
         this.units.remove(u);
+    }
+    
+    public Position getCastlePosition() {
+        return castle.getPosition();
     }
 }
