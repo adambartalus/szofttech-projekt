@@ -33,6 +33,7 @@ public class Game {
     }
     
     public void addUnit(Unit u) {
+    	u.findPath(new Position(8,8));
         this.units.add(u);
         this.getActivePlayer().addUnit(u);
     }

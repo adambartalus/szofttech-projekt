@@ -43,7 +43,22 @@ public class GameView {
         });
         b.setPreferredSize(new Dimension(160,30));
         
+        
+        JButton turnButton = new JButton("Turn");
+        turnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for(int i = 0; i < game.getUnits().size();i++) {
+                	game.getUnits().get(i).step();
+                	gameArea.repaint();
+                }
+                
+            }
+        });
+        turnButton.setPreferredSize(new Dimension(160,30));
+        
         controlPanel.add(b);
+        controlPanel.add(turnButton);
         
         frame.add(gameArea, BorderLayout.NORTH);
         frame.add(controlPanel, BorderLayout.SOUTH);
