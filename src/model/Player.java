@@ -2,7 +2,9 @@ package model;
 
 import java.util.ArrayList;
 
-
+/**
+ * Class of player
+ */
 public class Player {
     
     private int gold;

@@ -3,7 +3,9 @@ package model;
 import java.awt.Dimension;
 import java.util.ArrayList;
 
-
+/**
+ * The class storing the game data
+ */
 public class Game {
     public static int cellSize = 48;
     
@@ -12,6 +14,9 @@ public class Game {
     private final ArrayList<Unit> units;
     private final Dimension mapDimension;
 
+    /**
+     * @param d the dimensions of the map
+     */
     public Game(Dimension d) {
         this.players = new Player[]{
             new Player(new Position(1, d.width / 2 + 1)),
@@ -32,6 +37,10 @@ public class Game {
         return this.mapDimension;
     }
     
+    /**
+     * Adds an unit to the game
+     * @param u the unit to add
+     */
     public void addUnit(Unit u) {
     	u.findPath(new Position(8,8));
         this.units.add(u);

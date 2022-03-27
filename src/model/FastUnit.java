@@ -1,6 +1,8 @@
 package model;
 
-
+/**
+ * Faster unit
+ */
 public class FastUnit extends Unit {
     
     public FastUnit(Position pos) {

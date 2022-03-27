@@ -1,6 +1,8 @@
 package model;
 
-
+/**
+ * Class of buildings
+ */
 public class Building {
     
     private final Position position;

@@ -12,7 +12,9 @@ import model.Game;
 import model.Position;
 import model.StrongUnit;
 
-
+/**
+ * The main window of the game
+ */
 public class GameView {
     
     private final JFrame frame;
@@ -34,6 +36,9 @@ public class GameView {
         
         this.buttons = new ArrayList<>();
         
+        /**
+         * Button for spawning unit
+         */
         JButton b = new JButton("Spawn strongunit");
         b.addActionListener(new ActionListener() {
             @Override
@@ -43,7 +48,9 @@ public class GameView {
         });
         b.setPreferredSize(new Dimension(160,30));
         
-        
+        /**
+         * Button processing a turn
+         */
         JButton turnButton = new JButton("Turn");
         turnButton.addActionListener(new ActionListener() {
             @Override

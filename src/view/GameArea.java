@@ -15,6 +15,9 @@ import model.Position;
 import model.Unit;
 import res.ResourceLoader;
 
+/**
+ * Class displaying the game area
+ */
 public class GameArea extends JPanel{
 
     private Game game;
@@ -24,6 +27,9 @@ public class GameArea extends JPanel{
     
     private Image grass_tile;
     
+    /**
+     * @param game the object storing the game parameters
+     */
     public GameArea(Game game) {
         
         this.game = game;
@@ -43,6 +49,10 @@ public class GameArea extends JPanel{
         timer.start();
     }
     
+    /**
+     * Paints the game state
+     * @param g the graphics object
+     */
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
@@ -88,6 +98,10 @@ public class GameArea extends JPanel{
         } 
     }
     
+    
+    /**
+     * Periodically repaints the game area
+     */
     private class GameTimer extends Timer {
         public GameTimer(double ms) {
             super((int)ms, new ActionListener() {
