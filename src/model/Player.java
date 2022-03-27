@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Player {
     
     private int gold;
-    private Castle castle;
+    private final Castle castle;
     private ArrayList<Unit> units;
 
     public Player(Position castlePos) {
@@ -22,10 +22,17 @@ public class Player {
     public void setGold(int gold) {
         this.gold = gold;
     }
-    
+    /**
+     * Increases this player's gold by {@code v }
+     * @param v the amount of gold to be added
+     */
     public void increaseGold(int v) {
         this.gold += v;
     }
+    /**
+     * Decreases this player's gold by {@code v }
+     * @param v the amount of gold to be removed
+     */
     public void decreaseGold(int v) {
         this.gold -= v;
     }

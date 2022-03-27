@@ -19,22 +19,34 @@ public class Unit {
     public Position getPosition() {
         return this.position;
     }
-    
+    /**
+     * Damages this unit
+     * @param v the amount of damage
+     */
     public void takeDamage(int v) {
         this.hp -= v;
     }
-    
+    /**
+     * Heals this unit
+     * @param v the amount of heal
+     */
     public void heal(int v) {
         this.hp += v;
     }
-    
+    /**
+     * Moves this unit to the next position along the {@code path speed } times
+     */
     public void step() {
     	for(int i = 0; (i < speed) && (path.size()>1); i++) {
     		path.remove(0);
     		position=path.get(0);
     	}
     }
-    
+    /**
+     * Finds the shortest path to the {@code goal } using the A* algorithm
+     * and stores it in the {@code path } attribute
+     * @param goal the goal position
+     */
     public void findPath(Position goal) {
     	path = new ArrayList<Position>();
     	ArrayList<Node> openNodes = new ArrayList<Node>();
