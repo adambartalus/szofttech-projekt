@@ -26,6 +26,7 @@ public class GameArea extends JPanel{
     private final Timer timer;
     
     private Image grass_tile;
+    private Position pointedCell;
     
     /**
      * @param game the object storing the game parameters
@@ -48,7 +49,9 @@ public class GameArea extends JPanel{
         timer = new GameTimer(1000.0 / FPS);
         timer.start();
     }
-    
+    public void setPointedCell(Position p) {
+        this.pointedCell = p;
+    }
     /**
      * Paints the game state
      * @param g the graphics object
@@ -70,22 +73,56 @@ public class GameArea extends JPanel{
                 );
             }
         }
-        //drawing castles
+        if(null != pointedCell) {
+            g2.setColor(new Color(200, 200, 50, 120));
+            g2.fillRect(
+                    pointedCell.getX() * Game.cellSize,
+                    pointedCell.getY() * Game.cellSize,
+                    Game.cellSize,
+                    Game.cellSize
+            );
+        }
+        
+        //drawing buildings
         Position pos;
         g2.setFont(new Font("", Font.PLAIN, 25));
         
+        //first player's castle
         pos = game.getPlayer(0).getCastlePosition();
         g2.setColor(Color.blue);
         g2.fillRect(pos.getY() * Game.cellSize, pos.getX() * Game.cellSize, Game.cellSize, Game.cellSize);
         g2.setColor(Color.black);
         g2.drawString("K", pos.getY() * Game.cellSize + 15, pos.getX() * Game.cellSize + 32);
-        
+        //first player's towers
+        for(Position p : game.getPlayer(0).getTowerPositions()) {
+            g2.setColor(Color.blue);
+            g2.fillRect(
+                    p.getX() * Game.cellSize,
+                    p.getY() * Game.cellSize,
+                    Game.cellSize,
+                    Game.cellSize
+            );
+            g2.setColor(Color.black);
+            g2.drawString("T", p.getX() * Game.cellSize + 15, p.getY() * Game.cellSize + 32);
+        }
+        //second player's castle
         pos = game.getPlayer(1).getCastlePosition();
         g2.setColor(Color.red);
         g2.fillRect(pos.getY() * Game.cellSize, pos.getX() * Game.cellSize, Game.cellSize, Game.cellSize);
         g2.setColor(Color.black);
         g2.drawString("K", pos.getY() * Game.cellSize + 15, pos.getX() * Game.cellSize + 32);
-        
+        //second player's towers
+        for(Position p : game.getPlayer(1).getTowerPositions()) {
+            g2.setColor(Color.red);
+            g2.fillRect(
+                    p.getX() * Game.cellSize,
+                    p.getY() * Game.cellSize,
+                    Game.cellSize,
+                    Game.cellSize
+            );
+            g2.setColor(Color.black);
+            g2.drawString("T", p.getX() * Game.cellSize + 15, p.getY() * Game.cellSize + 32);
+        }
         //drawing units
         g2.setColor(Color.yellow);
         for(Unit u : this.game.getUnits()) {
