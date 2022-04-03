@@ -1,0 +1,13 @@
+image: openjdk:11
+
+before_script:
+  - apt-get update -yqq
+  - apt-get install -yqq ant junit4
+
+#Build
+build_game:
+  stage: build
+  script:
+    - ant compile
+    - ant jar
+
