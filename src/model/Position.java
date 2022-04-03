@@ -1,6 +1,8 @@
 package model;
 
-
+/**
+ * Represents a 2D position
+ */
 public class Position {
     private int x;
     private int y;

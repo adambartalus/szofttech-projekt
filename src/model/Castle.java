@@ -1,6 +1,8 @@
 package model;
 
-
+/**
+ * The headquarters building
+ */
 public class Castle extends Building {
     
     private int hp;

@@ -1,6 +1,8 @@
 package model;
 
-
+/**
+ * Stronger unit
+ */
 public class StrongUnit extends Unit {
     
     

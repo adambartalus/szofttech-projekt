@@ -3,6 +3,9 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Base class of units
+ */
 public class Unit {
     
     private Position position;
@@ -48,10 +51,13 @@ public class Unit {
      * @param goal the goal position
      */
     public void findPath(Position goal) {
+    	
+    	//Initializes node lists
     	path = new ArrayList<Position>();
     	ArrayList<Node> openNodes = new ArrayList<Node>();
     	ArrayList<Node> closedNodes = new ArrayList<Node>();
     	
+    	//Initializes start and end nodes
     	Node startNode = new Node(null, 0, position);
     	startNode.f = 0;
     	startNode.h = 0;
@@ -61,8 +67,10 @@ public class Unit {
     	
     	openNodes.add(startNode);
     	
+    	//start of main loop
     	while(openNodes.size() > 0) {
     		
+    		//finds most optimal open node
     		Node currentNode = openNodes.get(0);
     		int currentIndex = 0;
     		
@@ -73,10 +81,10 @@ public class Unit {
     			}
     		}
     		
-    		
     		openNodes.remove(currentIndex);
     		closedNodes.add(currentNode);
     		
+    		//Checks if the current node is at the end
     		if(currentNode.equal(endNode)) {
     			Node tmpCurrentNode = currentNode;
     			while(tmpCurrentNode != null) {
@@ -91,6 +99,7 @@ public class Unit {
     			openNodes.clear();
     		}
     		
+    		//Tries to open new nodes in four directions
     		Position posN = null;
     		if(currentNode.pos.getY()>0) {
     			posN = new Position(currentNode.pos.getX(),currentNode.pos.getY()-1);
