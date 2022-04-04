@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import model.BasicTower;
 import model.FastUnit;
 import model.Game;
@@ -40,6 +41,9 @@ public class GameView {
     
     private Class chosenTower;
     private Game game;
+    
+    private final int FPS = 60;
+    private final Timer timer;
 
     public GameView() {
         
@@ -58,7 +62,6 @@ public class GameView {
         towerPanel.setLayout(new BoxLayout(towerPanel,BoxLayout.Y_AXIS));
         unitPanel = new JPanel();
         unitPanel.setLayout(new BoxLayout(unitPanel, BoxLayout.Y_AXIS));
-        
         
         gameArea.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -196,7 +199,31 @@ public class GameView {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.pack();
+        
+        timer = new GameTimer(1000.0 / FPS);
+        timer.start();
+        
         frame.setVisible(true);
+    }
+    private void updateStatLabel() {
+        statLabel.setText(game.getActivePlayer().getName()
+                + ": " + game.getActivePlayer().getGold() + "g"
+                + ", " + game.getActivePlayer().getCastleHp() + " hp");
+    }
+    
+    /**
+     * Periodically repaints the game area and updates the stat label
+     */
+    private class GameTimer extends Timer {
+        public GameTimer(double ms) {
+            super((int)ms, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                    updateStatLabel();
+                    gameArea.repaint();
+                }
+            });
+        }
     }
     
 }

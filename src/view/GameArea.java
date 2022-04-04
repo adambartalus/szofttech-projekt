@@ -22,9 +22,6 @@ public class GameArea extends JPanel{
 
     private Game game;
     
-    private final int FPS = 120;
-    private final Timer timer;
-    
     private Image grass_tile;
     private Position pointedCell;
     
@@ -45,9 +42,6 @@ public class GameArea extends JPanel{
                 (int)d.getWidth() * Game.cellSize,
                 (int)d.getHeight() * Game.cellSize)
         );
-        
-        timer = new GameTimer(1000.0 / FPS);
-        timer.start();
     }
     public void setPointedCell(Position p) {
         this.pointedCell = p;
@@ -133,20 +127,5 @@ public class GameArea extends JPanel{
                 Game.cellSize
             );
         } 
-    }
-    
-    
-    /**
-     * Periodically repaints the game area
-     */
-    private class GameTimer extends Timer {
-        public GameTimer(double ms) {
-            super((int)ms, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent ae) {
-                    repaint();
-                }
-            });
-        }
     }
 }

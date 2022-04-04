@@ -4,8 +4,6 @@ import java.awt.Dimension;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The class storing the game data
@@ -24,8 +22,8 @@ public class Game {
      */
     public Game(Dimension d) {
         this.players = new Player[]{
-            new Player(new Position(1, d.width / 2 + 1)),
-            new Player(new Position(d.height - 2, d.width / 2 - 1))};
+            new Player("Player1", new Position(1, d.width / 2 + 1)),
+            new Player("Player2", new Position(d.height - 2, d.width / 2 - 1))};
         this.units = new ArrayList<>();
         this.towers = new ArrayList<>();
         this.mapDimension = d;

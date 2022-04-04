@@ -7,18 +7,24 @@ import java.util.ArrayList;
  */
 public class Player {
     
+    private final String name;
     private int gold;
     private final Castle castle;
-    private ArrayList<Unit> units;
-    private ArrayList<Tower> towers;
+    private final ArrayList<Unit> units;
+    private final ArrayList<Tower> towers;
 
-    public Player(Position castlePos) {
+    public Player(String name, Position castlePos) {
+        this.name = name;
         this.gold = 1000;
         this.castle = new Castle(castlePos, this);
         this.units = new ArrayList<>();
         this.towers = new ArrayList<>();
     }
 
+    public String getName() {
+        return name;
+    }
+    
     public int getGold() {
         return gold;
     }
@@ -62,5 +68,8 @@ public class Player {
     
     public Position getCastlePosition() {
         return castle.getPosition();
+    }
+    public int getCastleHp() {
+        return castle.getHp();
     }
 }

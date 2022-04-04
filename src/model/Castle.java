@@ -11,4 +11,10 @@ public class Castle extends Building {
         super(pos, player);
         this.hp = 5000;
     }
+    public int getHp() {
+        return hp;
+    }
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
 }
