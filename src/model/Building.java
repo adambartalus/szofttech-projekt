@@ -16,4 +16,8 @@ public class Building {
     public Position getPosition() {
         return position;
     }
+    
+    public Player getOwner() {
+        return owner;
+    }
 }

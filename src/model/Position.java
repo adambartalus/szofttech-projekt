@@ -31,5 +31,40 @@ public class Position {
     public void setY(int y) {
         this.y = y;
     }
+    public int distance(Position pos) {
+        return Math.max(Math.abs(x - pos.getX()), Math.abs(y - pos.getY()));
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Position other = (Position) obj;
+        if (this.x != other.x) {
+            return false;
+        }
+        if (this.y != other.y) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Position{" + "x=" + x + ", y=" + y + '}';
+    }
     
 }

@@ -11,6 +11,4 @@ public class Tower extends Building {
         this.range = range;
         this.damage = damage;
     }
-    
-    
 }

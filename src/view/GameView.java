@@ -85,8 +85,10 @@ public class GameView {
                 Point p = e.getPoint();
                 int x = (int)p.getX() / Game.cellSize;
                 int y = (int)p.getY() / Game.cellSize;
+                
                 game.addTower(chosenTower, new Position(x, y));
                 chosenTower = null;
+                gameArea.setPointedCell(null);
             }
         });
         

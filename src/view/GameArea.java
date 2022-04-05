@@ -84,9 +84,9 @@ public class GameArea extends JPanel{
         //first player's castle
         pos = game.getPlayer(0).getCastlePosition();
         g2.setColor(Color.blue);
-        g2.fillRect(pos.getY() * Game.cellSize, pos.getX() * Game.cellSize, Game.cellSize, Game.cellSize);
+        g2.fillRect(pos.getX() * Game.cellSize, pos.getY() * Game.cellSize, Game.cellSize, Game.cellSize);
         g2.setColor(Color.black);
-        g2.drawString("K", pos.getY() * Game.cellSize + 15, pos.getX() * Game.cellSize + 32);
+        g2.drawString("K", pos.getX() * Game.cellSize + 15, pos.getY() * Game.cellSize + 32);
         //first player's towers
         for(Position p : game.getPlayer(0).getTowerPositions()) {
             g2.setColor(Color.blue);
@@ -102,9 +102,9 @@ public class GameArea extends JPanel{
         //second player's castle
         pos = game.getPlayer(1).getCastlePosition();
         g2.setColor(Color.red);
-        g2.fillRect(pos.getY() * Game.cellSize, pos.getX() * Game.cellSize, Game.cellSize, Game.cellSize);
+        g2.fillRect(pos.getX() * Game.cellSize, pos.getY() * Game.cellSize, Game.cellSize, Game.cellSize);
         g2.setColor(Color.black);
-        g2.drawString("K", pos.getY() * Game.cellSize + 15, pos.getX() * Game.cellSize + 32);
+        g2.drawString("K", pos.getX() * Game.cellSize + 15, pos.getY() * Game.cellSize + 32);
         //second player's towers
         for(Position p : game.getPlayer(1).getTowerPositions()) {
             g2.setColor(Color.red);
@@ -121,8 +121,8 @@ public class GameArea extends JPanel{
         g2.setColor(Color.yellow);
         for(Unit u : this.game.getUnits()) {
             g2.fillRect(
-                u.getPosition().getY() * Game.cellSize,
                 u.getPosition().getX() * Game.cellSize,
+                u.getPosition().getY() * Game.cellSize,
                 Game.cellSize,
                 Game.cellSize
             );
