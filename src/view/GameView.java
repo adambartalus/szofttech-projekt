@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -23,6 +22,7 @@ import model.ObstacleUnit;
 import model.Position;
 import model.ShortRangeTower;
 import model.StrongUnit;
+import model.Tower;
 
 /**
  * The main window of the game
@@ -32,12 +32,18 @@ public class GameView {
     private final JFrame frame;
     private final GameArea gameArea;
     
-    private final JPanel controlPanel;
-    private final JPanel towerPanel;
+    private final JPanel mainControlPanel;
+    private final JPanel towerButtonPanel;
     private final JPanel unitPanel;
     
     private final JPanel statPanel;
     private final JLabel statLabel;
+    
+    private final JPanel towerControlPanel;
+    private final TowerControlButton upgradeTowerButton;
+    private final TowerControlButton demolishTowerButton;
+    
+    private JPanel activeControlPanel;
     
     private Class chosenTower;
     private Game game;
@@ -53,13 +59,47 @@ public class GameView {
         frame.setLayout(new BorderLayout(0, 5));
         gameArea = new GameArea(game);
         
-        controlPanel = new JPanel();
+        mainControlPanel = new JPanel();
+        activeControlPanel = mainControlPanel;
         
         statPanel = new JPanel();
         statLabel = new JLabel("Player1: " + game.getActivePlayer().getGold() + " g");
         
-        towerPanel = new JPanel();
-        towerPanel.setLayout(new BoxLayout(towerPanel,BoxLayout.Y_AXIS));
+        towerControlPanel = new JPanel();
+        towerControlPanel.setLayout(new BoxLayout(towerControlPanel, BoxLayout.X_AXIS));
+        
+        upgradeTowerButton = new TowerControlButton("Upgrade");
+        upgradeTowerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                upgradeTowerButton.getTower().upgrade();
+            }
+        });
+        demolishTowerButton = new TowerControlButton("Demolish");
+        demolishTowerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.demolishTower(demolishTowerButton.getTower());
+                setActiveControlPanel(mainControlPanel);
+                gameArea.setSelectedBuildingPos(null);
+            }
+        });
+        JButton exitButton = new JButton("X");
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setActiveControlPanel(mainControlPanel);
+                gameArea.setSelectedBuildingPos(null);
+            }
+            
+        });
+        towerControlPanel.add(upgradeTowerButton);
+        towerControlPanel.add(demolishTowerButton);
+        towerControlPanel.add(exitButton);
+        
+        
+        towerButtonPanel = new JPanel();
+        towerButtonPanel.setLayout(new BoxLayout(towerButtonPanel,BoxLayout.Y_AXIS));
         unitPanel = new JPanel();
         unitPanel.setLayout(new BoxLayout(unitPanel, BoxLayout.Y_AXIS));
         
@@ -67,26 +107,27 @@ public class GameView {
             @Override
             public void mouseMoved(MouseEvent e) {
                 if(null == chosenTower) {
+                    
                     return ;
                 }
-                Point p = e.getPoint();
-                int x = (int)p.getX() / Game.cellSize;
-                int y = (int)p.getY() / Game.cellSize;
-                gameArea.setPointedCell(new Position(x, y));
+                gameArea.setPointedCell(getPositionFromPoint(e.getPoint()));
             }
         });
         gameArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                Position pos = getPositionFromPoint(e.getPoint());
                 if(null == chosenTower) {
-                    System.out.println("there is not a chosen tower");
+                    Tower t = game.getTowerAtPos(pos);
+                    if(null != t) {
+                        upgradeTowerButton.setTower(t);
+                        demolishTowerButton.setTower(t);
+                        setActiveControlPanel(towerControlPanel);
+                        gameArea.setSelectedBuildingPos(pos);
+                    }
                     return ;
                 }
-                Point p = e.getPoint();
-                int x = (int)p.getX() / Game.cellSize;
-                int y = (int)p.getY() / Game.cellSize;
-                
-                game.addTower(chosenTower, new Position(x, y));
+                game.addTower(chosenTower, pos);
                 chosenTower = null;
                 gameArea.setPointedCell(null);
             }
@@ -178,11 +219,11 @@ public class GameView {
         
         statPanel.add(statLabel);
         
-        towerPanel.add(lrTower);
-        towerPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        towerPanel.add(basicTower);
-        towerPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        towerPanel.add(srTower);
+        towerButtonPanel.add(lrTower);
+        towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        towerButtonPanel.add(basicTower);
+        towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        towerButtonPanel.add(srTower);
         
         unitPanel.add(sUnit);
         unitPanel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -190,13 +231,13 @@ public class GameView {
         unitPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         unitPanel.add(oUnit);
         
-        controlPanel.add(towerPanel);
-        controlPanel.add(unitPanel);
-        controlPanel.add(turnButton);
+        mainControlPanel.add(towerButtonPanel);
+        mainControlPanel.add(unitPanel);
+        mainControlPanel.add(turnButton);
         
         frame.add(statPanel, BorderLayout.NORTH);
         frame.add(gameArea, BorderLayout.CENTER);
-        frame.add(controlPanel, BorderLayout.SOUTH);
+        frame.add(activeControlPanel, BorderLayout.SOUTH);
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
@@ -207,12 +248,23 @@ public class GameView {
         
         frame.setVisible(true);
     }
+    private Position getPositionFromPoint(Point p) {
+        int x = (int)p.getX() / Game.cellSize;
+        int y = (int)p.getY() / Game.cellSize;
+        
+        return new Position(x, y);
+    }
     private void updateStatLabel() {
         statLabel.setText(game.getActivePlayer().getName()
                 + ": " + game.getActivePlayer().getGold() + "g"
                 + ", " + game.getActivePlayer().getCastleHp() + " hp");
     }
-    
+    private void setActiveControlPanel(JPanel p) {
+        frame.remove(activeControlPanel);
+        activeControlPanel = p;
+        frame.add(activeControlPanel, BorderLayout.SOUTH);
+        frame.pack();
+    }
     /**
      * Periodically repaints the game area and updates the stat label
      */

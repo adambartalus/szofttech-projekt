@@ -87,6 +87,19 @@ public class Game {
             System.err.println("Error");
         }
     }
+    public void demolishTower(Tower t) {
+        towers.remove(t);
+        t.getOwner().removeTower(t);
+    }
+    public Tower getTowerAtPos(Position pos) {
+        for(Tower t : towers) {
+            if(t.getPosition().equals(pos)) {
+                return t;
+            }
+        }
+        return null;
+    }
+    
     
     public ArrayList<Unit> getUnits() {
         return this.units;

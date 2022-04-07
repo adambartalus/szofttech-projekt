@@ -6,10 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import model.Game;
 import model.Position;
 import model.Unit;
@@ -24,6 +21,7 @@ public class GameArea extends JPanel{
     
     private Image grass_tile;
     private Position pointedCell;
+    private Position selectedBuildingPos;
     
     /**
      * @param game the object storing the game parameters
@@ -45,6 +43,9 @@ public class GameArea extends JPanel{
     }
     public void setPointedCell(Position p) {
         this.pointedCell = p;
+    }
+    public void setSelectedBuildingPos(Position p) {
+        this.selectedBuildingPos = p;
     }
     /**
      * Paints the game state
@@ -117,6 +118,17 @@ public class GameArea extends JPanel{
             g2.setColor(Color.black);
             g2.drawString("T", p.getX() * Game.cellSize + 15, p.getY() * Game.cellSize + 32);
         }
+        //outline for selected building
+        if(null != selectedBuildingPos) {
+            g2.setColor(Color.YELLOW);
+            g2.drawRect(
+                    selectedBuildingPos.getX() * Game.cellSize,
+                    selectedBuildingPos.getY() * Game.cellSize,
+                    Game.cellSize,
+                    Game.cellSize
+            );
+        }
+        
         //drawing units
         g2.setColor(Color.yellow);
         for(Unit u : this.game.getUnits()) {

@@ -56,6 +56,9 @@ public class Player {
     public void addTower(Tower t) {
         this.towers.add(t);
     }
+    public void removeTower(Tower t) {
+        towers.remove(t);
+    }
     
     public ArrayList<Position> getTowerPositions() {
         ArrayList<Position> tPos = new ArrayList<>();
