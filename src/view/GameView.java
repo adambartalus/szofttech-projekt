@@ -1,6 +1,8 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -29,21 +31,30 @@ import model.Tower;
  */
 public class GameView {
     
+    private final String MAIN_CONTROL_PANEL = "MCP";
+    private final String TOWER_CONTROL_PANEL = "TCP";
+    
     private final JFrame frame;
+    private final JPanel cards;
+    private final CardLayout cardLayout;
+    
+    private final JPanel mainMenu;
+    private final JPanel gamePanel;
+    
     private final GameArea gameArea;
+    
+    private JPanel activeControlPanel;
     
     private final JPanel mainControlPanel;
     private final JPanel towerButtonPanel;
-    private final JPanel unitPanel;
-    
-    private final JPanel statPanel;
-    private final JLabel statLabel;
+    private final JPanel unitButtonPanel;
     
     private final JPanel towerControlPanel;
     private final TowerControlButton upgradeTowerButton;
     private final TowerControlButton demolishTowerButton;
     
-    private JPanel activeControlPanel;
+    private final JPanel statPanel;
+    private final JLabel statLabel;
     
     private Class chosenTower;
     private Game game;
@@ -53,18 +64,43 @@ public class GameView {
 
     public GameView() {
         
-        game = new Game(new Dimension(18, 10));
-        
         frame = new JFrame();
         frame.setLayout(new BorderLayout(0, 5));
-        gameArea = new GameArea(game);
+        cardLayout = new CardLayout();
+        cards = new JPanel(cardLayout);
         
-        mainControlPanel = new JPanel();
-        activeControlPanel = mainControlPanel;
+        mainMenu = new JPanel();
+        mainMenu.setLayout(new BoxLayout(mainMenu, BoxLayout.Y_AXIS));
+        mainMenu.setPreferredSize(new Dimension(500, 500));
+        
+        JButton newGameButton = new JButton("New Game");
+        newGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        newGameButton.setMaximumSize(new Dimension(200, 30));
+        newGameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                startNewGame();
+            }
+        });
+        JButton exitButton = new JButton("Exit");
+        exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        exitButton.setMaximumSize(new Dimension(200, 30));
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+        gamePanel = new JPanel(new BorderLayout());
         
         statPanel = new JPanel();
-        statLabel = new JLabel("Player1: " + game.getActivePlayer().getGold() + " g");
+        statLabel = new JLabel();
         
+        gameArea = new GameArea();
+        
+        activeControlPanel = new JPanel(new CardLayout());
+        
+        mainControlPanel = new JPanel();
         towerControlPanel = new JPanel();
         towerControlPanel.setLayout(new BoxLayout(towerControlPanel, BoxLayout.X_AXIS));
         
@@ -80,34 +116,32 @@ public class GameView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.demolishTower(demolishTowerButton.getTower());
-                setActiveControlPanel(mainControlPanel);
+                setActiveControlPanel(MAIN_CONTROL_PANEL);
                 gameArea.setSelectedBuildingPos(null);
             }
         });
-        JButton exitButton = new JButton("X");
-        exitButton.addActionListener(new ActionListener() {
+        JButton cancelButton = new JButton("X");
+        cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setActiveControlPanel(mainControlPanel);
+                setActiveControlPanel(MAIN_CONTROL_PANEL);
                 gameArea.setSelectedBuildingPos(null);
             }
             
         });
         towerControlPanel.add(upgradeTowerButton);
         towerControlPanel.add(demolishTowerButton);
-        towerControlPanel.add(exitButton);
-        
+        towerControlPanel.add(cancelButton);
         
         towerButtonPanel = new JPanel();
         towerButtonPanel.setLayout(new BoxLayout(towerButtonPanel,BoxLayout.Y_AXIS));
-        unitPanel = new JPanel();
-        unitPanel.setLayout(new BoxLayout(unitPanel, BoxLayout.Y_AXIS));
+        unitButtonPanel = new JPanel();
+        unitButtonPanel.setLayout(new BoxLayout(unitButtonPanel, BoxLayout.Y_AXIS));
         
         gameArea.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
                 if(null == chosenTower) {
-                    
                     return ;
                 }
                 gameArea.setPointedCell(getPositionFromPoint(e.getPoint()));
@@ -119,10 +153,10 @@ public class GameView {
                 Position pos = getPositionFromPoint(e.getPoint());
                 if(null == chosenTower) {
                     Tower t = game.getTowerAtPos(pos);
-                    if(null != t) {
+                    if(null != t && t.getOwner() == game.getActivePlayer()) {
                         upgradeTowerButton.setTower(t);
                         demolishTowerButton.setTower(t);
-                        setActiveControlPanel(towerControlPanel);
+                        setActiveControlPanel(TOWER_CONTROL_PANEL);
                         gameArea.setSelectedBuildingPos(pos);
                     }
                     return ;
@@ -143,7 +177,6 @@ public class GameView {
                 chosenTower = LongRangeTower.class;
             }
         });
-        //lrTower.setPreferredSize(new Dimension(200,30));
         /**
          * Button for spawning basic tower
          */
@@ -154,7 +187,6 @@ public class GameView {
                 chosenTower = BasicTower.class;
             }
         });
-        //basicTower.setPreferredSize(new Dimension(200,30));
         /**
          * Button for spawning short range tower
          */
@@ -165,8 +197,6 @@ public class GameView {
                 chosenTower = ShortRangeTower.class;
             }
         });
-        //srTower.setPreferredSize(new Dimension(200,30));
-        
         /**
          * Button for spawning strong unit
          */
@@ -177,7 +207,6 @@ public class GameView {
                 GameView.this.game.addUnit(new StrongUnit(game.getActivePlayer().getCastlePosition()));
             }
         });
-        //sUnit.setPreferredSize(new Dimension(160,60));
         /**
          * Button for spawning fast unit
          */
@@ -188,7 +217,6 @@ public class GameView {
                 GameView.this.game.addUnit(new FastUnit(game.getActivePlayer().getCastlePosition()));
             }
         });
-        //fUnit.setPreferredSize(new Dimension(160,60));
         /**
          * Button for spawning obstacle unit
          */
@@ -196,11 +224,9 @@ public class GameView {
         oUnit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameView.this.game.addUnit(new ObstacleUnit(game.getActivePlayer().getCastlePosition()));
+                game.addUnit(new ObstacleUnit(game.getActivePlayer().getCastlePosition()));
             }
-        });
-        //oUnit.setPreferredSize(new Dimension(160,60));
-        
+        });        
         /**
          * Button processing a turn
          */
@@ -210,7 +236,6 @@ public class GameView {
             public void actionPerformed(ActionEvent e) {
                 for(int i = 0; i < game.getUnits().size();i++) {
                 	game.getUnits().get(i).step();
-                	gameArea.repaint();
                 }
                 game.nextPlayer();
             }
@@ -225,28 +250,52 @@ public class GameView {
         towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         towerButtonPanel.add(srTower);
         
-        unitPanel.add(sUnit);
-        unitPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        unitPanel.add(fUnit);
-        unitPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        unitPanel.add(oUnit);
+        unitButtonPanel.add(sUnit);
+        unitButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        unitButtonPanel.add(fUnit);
+        unitButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        unitButtonPanel.add(oUnit);
         
         mainControlPanel.add(towerButtonPanel);
-        mainControlPanel.add(unitPanel);
+        mainControlPanel.add(unitButtonPanel);
         mainControlPanel.add(turnButton);
         
-        frame.add(statPanel, BorderLayout.NORTH);
-        frame.add(gameArea, BorderLayout.CENTER);
-        frame.add(activeControlPanel, BorderLayout.SOUTH);
+        activeControlPanel.add(mainControlPanel, MAIN_CONTROL_PANEL);
+        activeControlPanel.add(towerControlPanel, TOWER_CONTROL_PANEL);
+        ((CardLayout)(activeControlPanel.getLayout())).show(activeControlPanel, MAIN_CONTROL_PANEL);
+        
+        mainMenu.add(Box.createRigidArea(new Dimension(0, 200)));
+        mainMenu.add(newGameButton);
+        mainMenu.add(Box.createRigidArea(new Dimension(0, 10)));
+        mainMenu.add(exitButton);
+        
+        gamePanel.add(statPanel, BorderLayout.NORTH);
+        gamePanel.add(gameArea, BorderLayout.CENTER);
+        gamePanel.add(activeControlPanel, BorderLayout.SOUTH);
+        
+        cards.add(mainMenu, "Menu");
+        cards.add(gamePanel, "Game");
+        
+        frame.add(cards);
+        cardLayout.show(cards, "Menu");
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.pack();
         
         timer = new GameTimer(1000.0 / FPS);
-        timer.start();
         
         frame.setVisible(true);
+    }
+    private void startNewGame() {
+        game = new Game(new Dimension(18, 10));
+        gameArea.setGame(game);
+        gameArea.adjustSize();
+       
+        cardLayout.show(cards, "Game");
+        frame.pack();
+        
+        timer.restart();
     }
     private Position getPositionFromPoint(Point p) {
         int x = (int)p.getX() / Game.cellSize;
@@ -259,11 +308,8 @@ public class GameView {
                 + ": " + game.getActivePlayer().getGold() + "g"
                 + ", " + game.getActivePlayer().getCastleHp() + " hp");
     }
-    private void setActiveControlPanel(JPanel p) {
-        frame.remove(activeControlPanel);
-        activeControlPanel = p;
-        frame.add(activeControlPanel, BorderLayout.SOUTH);
-        frame.pack();
+    private void setActiveControlPanel(String s) {
+        ((CardLayout)(activeControlPanel.getLayout())).show(activeControlPanel, s);
     }
     /**
      * Periodically repaints the game area and updates the stat label
@@ -279,5 +325,4 @@ public class GameView {
             });
         }
     }
-    
 }

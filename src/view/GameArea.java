@@ -26,14 +26,26 @@ public class GameArea extends JPanel{
     /**
      * @param game the object storing the game parameters
      */
+    public GameArea() {
+        try {
+            grass_tile = ResourceLoader.loadImage("res/grass_tile.png");
+        } catch(Exception e) {
+            
+        }
+    }
     public GameArea(Game game) {
-        
         this.game = game;
         try {
             grass_tile = ResourceLoader.loadImage("res/grass_tile.png");
         } catch(Exception e) {
             
         }
+        adjustSize();
+    }
+    public void setGame(Game g) {
+        game = g;
+    }
+    public void adjustSize() {
         Dimension d = this.game.getMapDimension();
         setPreferredSize(
             new Dimension(

@@ -12,6 +12,10 @@
     <target name="jar" depends="compile">
         <mkdir dir="build/jar"/>
         <jar destfile="build/jar/TowerDefense.jar" basedir="build/classes">
+			<fileset dir="src">
+				<include name="res/**/*.png" />
+			</fileset>
+			
             <manifest>
                 <attribute name="Main-Class" value="main.Main"/>
             </manifest>

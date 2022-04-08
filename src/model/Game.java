@@ -53,11 +53,11 @@ public class Game {
      * @param u the unit to add
      */
     public void addUnit(Unit u) {
-    	u.findPath(new Position(8,8));
+    	u.findPath(getOpponent().getCastlePosition());
         this.units.add(u);
         players[activePlayerIndex].addUnit(u);
     }
-    public void addTower(Class towerClass, Position pos) {
+    public void addTower(Class<?> towerClass, Position pos) {
         Field costField;
         int cost;
         try {
@@ -77,7 +77,8 @@ public class Game {
             return ;
         }
         try {
-            Constructor c = towerClass.getConstructor(new Class[]{Position.class, Player.class});
+            Class<?>[] types = new Class[] {Position.class, Player.class};
+            Constructor<?> c = towerClass.getConstructor(types);
             Tower t = (Tower)c.newInstance(pos, players[activePlayerIndex]);
             
             this.towers.add(t);
