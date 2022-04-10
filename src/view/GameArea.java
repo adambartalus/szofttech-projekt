@@ -130,6 +130,16 @@ public class GameArea extends JPanel{
             g2.setColor(Color.black);
             g2.drawString("T", p.getX() * Game.cellSize + 15, p.getY() * Game.cellSize + 32);
         }
+        //obstacles
+        for(Position p : game.getObstaclePositions()) {
+            g2.setColor(new Color(139, 69, 19));
+            g2.fillRect(
+                    p.getX() * Game.cellSize,
+                    p.getY() * Game.cellSize,
+                    Game.cellSize,
+                    Game.cellSize
+            );
+        }
         //outline for selected building
         if(null != selectedBuildingPos) {
             g2.setColor(Color.YELLOW);
