@@ -22,10 +22,7 @@ public class GameArea extends JPanel{
     private Image grass_tile;
     private Position pointedCell;
     private Position selectedBuildingPos;
-    
-    /**
-     * @param game the object storing the game parameters
-     */
+   
     public GameArea() {
         try {
             grass_tile = ResourceLoader.loadImage("res/grass_tile.png");
@@ -33,6 +30,9 @@ public class GameArea extends JPanel{
             
         }
     }
+    /**
+     * @param game the object storing the game parameters
+     */
     public GameArea(Game game) {
         this.game = game;
         try {
@@ -67,9 +67,9 @@ public class GameArea extends JPanel{
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         Dimension d = this.game.getMapDimension();
-        
-        for(int i = 0; i < d.getWidth(); i++) {
-            for(int j = 0; j < d.getHeight(); j++) {
+
+        for(int i = 0; i < (int)d.getWidth(); i++) {
+            for(int j = 0; j < (int)d.getHeight(); j++) {
                 g2.drawImage(
                     grass_tile,
                     i*Game.cellSize,

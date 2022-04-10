@@ -18,15 +18,25 @@ public class Game {
     private final Dimension mapDimension;
 
     /**
+     * 
      * @param d the dimensions of the map
+     * @param player1 the name of player 1
+     * @param player2 the name of player 2
      */
-    public Game(Dimension d) {
+    public Game(Dimension d, String player1, String player2) {
         this.players = new Player[]{
-            new Player("Player1", new Position(d.width / 2 + 1, 1)),
-            new Player("Player2", new Position(d.width / 2 - 1, d.height - 2))};
+            new Player(player1, new Position(d.width / 2 + 1, 1)),
+            new Player(player2, new Position(d.width / 2 - 1, d.height - 2))};
         this.units = new ArrayList<>();
         this.towers = new ArrayList<>();
         this.mapDimension = d;
+    }
+    /**
+     * 
+     * @param d the dimensions of the map
+     */
+    public Game(Dimension d) {
+        this(d, "Player1", "Player2");
     }
     public void nextPlayer() {
         activePlayerIndex = (activePlayerIndex + 1) % 2;
@@ -40,7 +50,7 @@ public class Game {
         return this.players[(activePlayerIndex + 1) % 2];
     }
     
-    public Player getPlayer(int i) { // not final solution
+    public Player getPlayer(int i) {
         return players[i];
     }
     
@@ -49,7 +59,7 @@ public class Game {
     }
     
     /**
-     * Adds an unit to the game
+     * Adds an unit to the game, the active player is the owner
      * @param u the unit to add
      */
     public void addUnit(Unit u) {
@@ -57,6 +67,11 @@ public class Game {
         this.units.add(u);
         players[activePlayerIndex].addUnit(u);
     }
+    /**
+     * Adds a tower to the game, the active player is the owner
+     * @param towerClass the class of the tower
+     * @param pos the position of the tower
+     */
     public void addTower(Class<?> towerClass, Position pos) {
         Field costField;
         int cost;
@@ -100,7 +115,6 @@ public class Game {
         }
         return null;
     }
-    
     
     public ArrayList<Unit> getUnits() {
         return this.units;

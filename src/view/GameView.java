@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.Timer;
 import model.BasicTower;
 import model.FastUnit;
@@ -39,6 +41,11 @@ public class GameView {
     private final CardLayout cardLayout;
     
     private final JPanel mainMenu;
+    private final JPanel gameSettings;
+    private final JTextField rowField;
+    private final JTextField colField;
+    private final JTextField player1NameField;
+    private final JTextField player2NameField;
     private final JPanel gamePanel;
     
     private final GameArea gameArea;
@@ -48,6 +55,12 @@ public class GameView {
     private final JPanel mainControlPanel;
     private final JPanel towerButtonPanel;
     private final JPanel unitButtonPanel;
+    
+    private final JPanel towerPanel;
+    private final JPanel towerStatPanel;
+    private final JLabel towerNameLabel;
+    private final JLabel towerDamageLabel;
+    private final JLabel towerRangeLabel;
     
     private final JPanel towerControlPanel;
     private final TowerControlButton upgradeTowerButton;
@@ -79,37 +92,101 @@ public class GameView {
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                startNewGame();
+                cardLayout.show(cards, "Settings");
+                frame.pack();
             }
         });
         JButton exitButton = new JButton("Exit");
         exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitButton.setMaximumSize(new Dimension(200, 30));
-        exitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
+        exitButton.addActionListener((ActionEvent e) -> {
+            System.exit(0);
         });
+        gameSettings = new JPanel();
+        gameSettings.setLayout(null);
+        
+        rowField = new JTextField();
+        rowField.setSize(new Dimension(30, 25));
+        rowField.setLocation(250, 150);
+        colField = new JTextField();
+        colField.setSize(new Dimension(30, 25));
+        colField.setLocation(250, 180);
+        
+        JLabel rowLabel = new JLabel("Rows: ");
+        rowLabel.setSize(new Dimension(50, 25));
+        rowLabel.setLocation(205, 150);
+        
+        JLabel colLabel = new JLabel("Cols: ");
+        colLabel.setSize(new Dimension(50, 25));
+        colLabel.setLocation(210, 180);
+        
+        player1NameField = new JTextField("Player1");
+        player1NameField.setSize(new Dimension(100, 25));
+        player1NameField.setLocation(250, 210);
+        player2NameField = new JTextField("Player2");
+        player2NameField.setSize(new Dimension(100, 25));
+        player2NameField.setLocation(250, 240);
+        
+        JLabel p1 = new JLabel("Player 1: ");
+        p1.setSize(new Dimension(60, 25));
+        p1.setLocation(190, 210);
+        JLabel p2 = new JLabel("Player 2: ");
+        p2.setSize(new Dimension(60, 25));
+        p2.setLocation(190, 240);
+        
+        JButton startGameButton = new JButton("Start Game");
+        startGameButton.addActionListener((ActionEvent e) -> {
+            startNewGame();
+        });
+        startGameButton.setSize(new Dimension(100, 25));
+        startGameButton.setLocation(210, 270);
+        
+        gameSettings.add(rowLabel);
+        gameSettings.add(rowField);
+        gameSettings.add(colLabel);
+        gameSettings.add(colField);
+        gameSettings.add(p1);
+        gameSettings.add(player1NameField);
+        gameSettings.add(p2);
+        gameSettings.add(player2NameField);
+        gameSettings.add(startGameButton);
+        
         gamePanel = new JPanel(new BorderLayout());
         
         statPanel = new JPanel();
+        statPanel.setLayout(new BoxLayout(statPanel, BoxLayout.Y_AXIS));
         statLabel = new JLabel();
+        statLabel.setPreferredSize(new Dimension(300, 30));
+        statLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         gameArea = new GameArea();
+        
+        towerPanel = new JPanel();
+        towerPanel.setLayout(new GridLayout(0, 2));
+        towerStatPanel = new JPanel();
+        towerStatPanel.setLayout(new BoxLayout(towerStatPanel, BoxLayout.Y_AXIS));
+        towerNameLabel = new JLabel();
+        towerNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        towerDamageLabel = new JLabel();
+        towerDamageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        towerRangeLabel = new JLabel();
+        towerRangeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        towerStatPanel.add(towerNameLabel);
+        towerStatPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        towerStatPanel.add(towerDamageLabel);
+        towerStatPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        towerStatPanel.add(towerRangeLabel);
         
         activeControlPanel = new JPanel(new CardLayout());
         
         mainControlPanel = new JPanel();
         towerControlPanel = new JPanel();
-        towerControlPanel.setLayout(new BoxLayout(towerControlPanel, BoxLayout.X_AXIS));
+        towerControlPanel.setLayout(new BoxLayout(towerControlPanel, BoxLayout.Y_AXIS));
         
         upgradeTowerButton = new TowerControlButton("Upgrade");
-        upgradeTowerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                upgradeTowerButton.getTower().upgrade();
-            }
+        upgradeTowerButton.addActionListener((ActionEvent e) -> {
+            upgradeTowerButton.getTower().upgrade();
         });
         demolishTowerButton = new TowerControlButton("Demolish");
         demolishTowerButton.addActionListener(new ActionListener() {
@@ -154,6 +231,7 @@ public class GameView {
                 if(null == chosenTower) {
                     Tower t = game.getTowerAtPos(pos);
                     if(null != t && t.getOwner() == game.getActivePlayer()) {
+                        updateTowerStats(t);
                         upgradeTowerButton.setTower(t);
                         demolishTowerButton.setTower(t);
                         setActiveControlPanel(TOWER_CONTROL_PANEL);
@@ -260,8 +338,11 @@ public class GameView {
         mainControlPanel.add(unitButtonPanel);
         mainControlPanel.add(turnButton);
         
+        towerPanel.add(towerStatPanel);
+        towerPanel.add(towerControlPanel);
+        
         activeControlPanel.add(mainControlPanel, MAIN_CONTROL_PANEL);
-        activeControlPanel.add(towerControlPanel, TOWER_CONTROL_PANEL);
+        activeControlPanel.add(towerPanel, TOWER_CONTROL_PANEL);
         ((CardLayout)(activeControlPanel.getLayout())).show(activeControlPanel, MAIN_CONTROL_PANEL);
         
         mainMenu.add(Box.createRigidArea(new Dimension(0, 200)));
@@ -274,6 +355,7 @@ public class GameView {
         gamePanel.add(activeControlPanel, BorderLayout.SOUTH);
         
         cards.add(mainMenu, "Menu");
+        cards.add(gameSettings, "Settings");
         cards.add(gamePanel, "Game");
         
         frame.add(cards);
@@ -287,8 +369,34 @@ public class GameView {
         
         frame.setVisible(true);
     }
+    private void updateTowerStats(Tower t) {
+        towerNameLabel.setText(t.getClass().getName());
+        towerDamageLabel.setText("Damage: " + t.getDamage());
+        towerRangeLabel.setText("Range: " + t.getRange());
+    }
     private void startNewGame() {
-        game = new Game(new Dimension(18, 10));
+        int row, col;
+        try {
+            row = Integer.parseInt(this.rowField.getText());
+        } catch(NumberFormatException nfe) {
+            return;
+        }
+        try {
+            col = Integer.parseInt(this.colField.getText());
+        } catch(NumberFormatException nfe) {
+            return;
+        }
+        if(row < 8 || row > 10) {
+            System.err.println("The number of rows should be between 8 and 10");
+            return ;
+        }
+        if(col < 12 || col > 20) {
+            System.err.println("The number of columns should be between 9 and 20");
+            return;
+        }
+        String player1 = player1NameField.getText();
+        String player2 = player2NameField.getText();
+        game = new Game(new Dimension(col, row), player1, player2);
         gameArea.setGame(game);
         gameArea.adjustSize();
        

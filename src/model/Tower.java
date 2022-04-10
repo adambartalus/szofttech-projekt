@@ -11,6 +11,15 @@ public class Tower extends Building {
         this.range = range;
         this.damage = damage;
     }
+
+    public int getRange() {
+        return range;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+    
     public void upgrade() {
         //TODO
     }
