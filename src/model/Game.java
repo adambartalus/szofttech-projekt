@@ -116,7 +116,7 @@ public class Game {
             System.err.println("Not enough gold!");
             return ;
         }
-        
+        u.owner = players[activePlayerIndex];
     	u.findPath(getOpponent().getCastlePosition());
         this.units.add(u);
         players[activePlayerIndex].addUnit(u);

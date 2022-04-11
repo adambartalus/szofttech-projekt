@@ -14,6 +14,7 @@ public class Unit {
     protected int speed;
     protected int hp;
     public ArrayList<Position> path;
+    public Player owner;
     
     protected Unit(Position pos, int speed, int hp) {
         this.position = pos;
