@@ -11,7 +11,7 @@ public class Unit {
     private Position position;
     protected int speed;
     protected int hp;
-    protected ArrayList<Position> path;
+    public ArrayList<Position> path;
     
     protected Unit(Position pos, int speed, int hp) {
         this.position = pos;
@@ -40,6 +40,7 @@ public class Unit {
      * Moves this unit to the next position along the {@code path speed } times
      */
     public void step() {
+    	findPath(path.get(path.size()-1));
     	for(int i = 0; (i < speed) && (path.size()>1); i++) {
     		path.remove(0);
     		position=path.get(0);
@@ -105,7 +106,7 @@ public class Unit {
     			posN = new Position(currentNode.pos.getX(),currentNode.pos.getY()-1);
     		}
     		Position posS = null;
-    		if(currentNode.pos.getY()<9) {
+    		if(currentNode.pos.getY()<Game.map[0].length-1) {
     			posS = new Position(currentNode.pos.getX(),currentNode.pos.getY()+1);
     		}
     		Position posW = null;
@@ -113,7 +114,7 @@ public class Unit {
     			posW = new Position(currentNode.pos.getX()-1,currentNode.pos.getY());
     		}
     		Position posE = null;
-    		if(currentNode.pos.getX()<17) {
+    		if(currentNode.pos.getX()<Game.map.length-1) {
     			posE = new Position(currentNode.pos.getX()+1,currentNode.pos.getY());
     		}
     		
@@ -158,28 +159,40 @@ public class Unit {
     			Node child = new Node(currentNode,currentNode.g+1,posN);
     			child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
     			child.f = child.g + child.h;
-    			openNodes.add(child);
+    			if(Game.map[child.pos.getX()][child.pos.getY()])
+    				openNodes.add(child);
+    			else
+    				closedNodes.add(child);
     		}
     		
     		if(posS != null) {
     			Node child = new Node(currentNode,currentNode.g+1,posS);
     			child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
     			child.f = child.g + child.h;
-    			openNodes.add(child);
+    			if(Game.map[child.pos.getX()][child.pos.getY()])
+    				openNodes.add(child);
+    			else
+    				closedNodes.add(child);
     		}
     		
     		if(posW != null) {
     			Node child = new Node(currentNode,currentNode.g+1,posW);
     			child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
     			child.f = child.g + child.h;
-    			openNodes.add(child);
+    			if(Game.map[child.pos.getX()][child.pos.getY()])
+    				openNodes.add(child);
+    			else
+    				closedNodes.add(child);
     		}
     		
     		if(posE != null) {
     			Node child = new Node(currentNode,currentNode.g+1,posE);
     			child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
     			child.f = child.g + child.h;
-    			openNodes.add(child);
+    			if(Game.map[child.pos.getX()][child.pos.getY()])
+    				openNodes.add(child);
+    			else
+    				closedNodes.add(child);
     		}
     		
     	}

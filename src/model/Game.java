@@ -19,6 +19,7 @@ public class Game {
     private final ArrayList<Tower> towers;
     private final ArrayList<Obstacle> obstacles;
     private final Dimension mapDimension;
+    public static boolean[][] map;
 
     /**
      * 
@@ -37,6 +38,8 @@ public class Game {
         this.obstacles = new ArrayList<>();
         this.mapDimension = d;
         generateRandomObstacles();
+        map = new boolean[mapDimension.width][mapDimension.height];
+        reloadObstacles();
     }
     /**
      * 
@@ -44,6 +47,21 @@ public class Game {
      */
     public Game(Dimension d) {
         this(d, "Player1", "Player2");
+    }
+    public void reloadObstacles() {
+    	for(int i = 0; i < mapDimension.width; i++) {
+    		for(int j = 0; j < mapDimension.height; j++) {
+        		map[i][j] = true;
+        	}
+    	}
+    	ArrayList<Position> obstaclePosition = getObstaclePositions();
+    	ArrayList<Position> towerPosition = getTowerPositions();
+    	for(int i = 0; i < obstaclePosition.size(); i++) {
+    		map[obstaclePosition.get(i).getX()][obstaclePosition.get(i).getY()] = false;
+    	}
+    	for(int i = 0; i < towerPosition.size(); i++) {
+    		map[towerPosition.get(i).getX()][towerPosition.get(i).getY()] = false;
+    	}
     }
     public void nextPlayer() {
         activePlayerIndex = (activePlayerIndex + 1) % 2;
@@ -68,6 +86,14 @@ public class Game {
         ArrayList<Position> pos = new ArrayList<>();
         for(Obstacle o : obstacles) {
             pos.add(new Position(o.getPosition()));
+        }
+        return pos;
+    }
+    
+    public ArrayList<Position> getTowerPositions() {
+        ArrayList<Position> pos = new ArrayList<>();
+        for(Tower t : towers) {
+            pos.add(new Position(t.getPosition()));
         }
         return pos;
     }

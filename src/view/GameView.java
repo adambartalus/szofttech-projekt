@@ -312,6 +312,7 @@ public class GameView {
         turnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	game.reloadObstacles();
                 for(int i = 0; i < game.getUnits().size();i++) {
                 	game.getUnits().get(i).step();
                 }
