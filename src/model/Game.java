@@ -103,9 +103,25 @@ public class Game {
      * @param u the unit to add
      */
     public void addUnit(Unit u) {
+        Field costField;
+        int cost;
+        try {
+            costField = u.getClass().getField("COST");
+            cost = costField.getInt(null);
+        } catch (Exception ex) {
+            System.err.println("Error");
+            return ;
+        }
+        if(players[activePlayerIndex].getGold() < cost) {
+            System.err.println("Not enough gold!");
+            return ;
+        }
+        
     	u.findPath(getOpponent().getCastlePosition());
         this.units.add(u);
         players[activePlayerIndex].addUnit(u);
+        players[activePlayerIndex].decreaseGold(cost);
+        
     }
     /**
      * Adds a tower to the game, the active player is the owner
