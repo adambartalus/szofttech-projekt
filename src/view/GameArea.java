@@ -17,7 +17,7 @@ import res.ResourceLoader;
  */
 public class GameArea extends JPanel{
 
-    private Game game;
+    public Game game;
     
     private Image grass_tile;
     private Position pointedCell;

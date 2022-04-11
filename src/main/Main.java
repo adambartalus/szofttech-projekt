@@ -4,12 +4,12 @@ import view.GameView;
 
 
 public class Main {
-
+	public static GameView gw;
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        GameView gw = new GameView();
+       gw = new GameView();
     }
     
 }

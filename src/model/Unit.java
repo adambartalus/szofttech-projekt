@@ -3,6 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import main.Main;
+
 /**
  * Base class of units
  */
@@ -28,6 +30,9 @@ public class Unit {
      */
     public void takeDamage(int v) {
         this.hp -= v;
+        if(this.hp<=0) {
+        	Main.gw.gameArea.game.getUnits().remove(this);
+        }
     }
     /**
      * Heals this unit

@@ -160,6 +160,9 @@ public class Game {
     public ArrayList<Unit> getUnits() {
         return this.units;
     }
+    public ArrayList<Tower> getTowers() {
+        return this.towers;
+    }
     /**
      * Checks if the active player can build a tower at the given position
      * @param pos The position of the tower

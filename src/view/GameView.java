@@ -48,7 +48,7 @@ public class GameView {
     private final JTextField player2NameField;
     private final JPanel gamePanel;
     
-    private final GameArea gameArea;
+    public final GameArea gameArea;
     
     private JPanel activeControlPanel;
     
@@ -315,6 +315,9 @@ public class GameView {
             	game.reloadObstacles();
                 for(int i = 0; i < game.getUnits().size();i++) {
                 	game.getUnits().get(i).step();
+                }
+                for(int i = 0; i < game.getTowers().size();i++) {
+                	game.getTowers().get(i).turn();
                 }
                 game.nextPlayer();
             }
