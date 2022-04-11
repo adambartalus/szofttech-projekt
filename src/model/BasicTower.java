@@ -8,6 +8,9 @@ public class BasicTower extends Tower {
             
     public BasicTower(Position pos, Player player) {
         super(4, 70, pos, player);
+        damageinc = 10;
+        rangeinc = 1;
+        upgradecost = 100;
     }
     
 }

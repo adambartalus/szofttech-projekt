@@ -8,6 +8,9 @@ public class LongRangeTower extends Tower {
     
     public LongRangeTower(Position pos, Player player) {
         super(5, 58, pos, player);
+        damageinc = 10;
+        rangeinc = 2;
+        upgradecost = 100;
     }
     
 }

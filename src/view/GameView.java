@@ -186,7 +186,14 @@ public class GameView {
         
         upgradeTowerButton = new TowerControlButton("Upgrade");
         upgradeTowerButton.addActionListener((ActionEvent e) -> {
+        	if(game.getActivePlayer().getGold()>upgradeTowerButton.getTower().upgradecost) {
+        		game.getActivePlayer().decreaseGold(upgradeTowerButton.getTower().upgradecost);
+        		upgradeTowerButton.getTower().upgrade();
+                updateTowerStats(upgradeTowerButton.getTower());
+        	}
             upgradeTowerButton.getTower().upgrade();
+            updateTowerStats(upgradeTowerButton.getTower());
+            
         });
         demolishTowerButton = new TowerControlButton("Demolish");
         demolishTowerButton.addActionListener(new ActionListener() {
