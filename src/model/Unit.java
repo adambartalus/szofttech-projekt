@@ -13,6 +13,7 @@ public class Unit {
     private Position position;
     protected int speed;
     protected int hp;
+    private final int maxHp;
     public ArrayList<Position> path;
     public Player owner;
     
@@ -20,6 +21,22 @@ public class Unit {
         this.position = pos;
         this.speed = speed;
         this.hp = hp;
+        this.maxHp = hp;
+    }
+
+    public String getOwnerName() {
+        return owner.getName();
+    }
+    
+    public int getSpeed() {
+        return speed;
+    }
+
+    public int getHp() {
+        return hp;
+    }
+    public int getMaxHp() {
+        return maxHp;
     }
     
     public Position getPosition() {

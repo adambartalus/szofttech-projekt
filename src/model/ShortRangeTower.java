@@ -7,7 +7,7 @@ public class ShortRangeTower extends Tower {
     public final static int[] UPGRADE_COST = {200, 250}; 
     
     public ShortRangeTower(Position pos, Player player) {
-        super(3, 90, pos, player);
+        super(1, 90, pos, player);
     }
     
 }

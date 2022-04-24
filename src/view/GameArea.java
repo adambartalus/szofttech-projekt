@@ -140,7 +140,17 @@ public class GameArea extends JPanel{
                     Game.cellSize
             );
         }
-        //outline for selected building
+        //drawing units
+        g2.setColor(Color.BLACK);
+        for(Unit u : this.game.getUnits()) {
+            g2.fillRect(
+                u.getPosition().getX() * Game.cellSize,
+                u.getPosition().getY() * Game.cellSize,
+                Game.cellSize,
+                Game.cellSize
+            );
+        }
+        //outline for selected cell
         if(null != selectedBuildingPos) {
             g2.setColor(Color.YELLOW);
             g2.drawRect(
@@ -150,16 +160,5 @@ public class GameArea extends JPanel{
                     Game.cellSize
             );
         }
-        
-        //drawing units
-        g2.setColor(Color.yellow);
-        for(Unit u : this.game.getUnits()) {
-            g2.fillRect(
-                u.getPosition().getX() * Game.cellSize,
-                u.getPosition().getY() * Game.cellSize,
-                Game.cellSize,
-                Game.cellSize
-            );
-        } 
     }
 }

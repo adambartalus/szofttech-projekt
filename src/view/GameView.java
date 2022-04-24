@@ -10,12 +10,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 import model.BasicTower;
@@ -27,6 +30,8 @@ import model.Position;
 import model.ShortRangeTower;
 import model.StrongUnit;
 import model.Tower;
+import model.Unit;
+import model.UnitInfoTableModel;
 
 /**
  * The main window of the game
@@ -35,6 +40,7 @@ public class GameView {
     
     private final String MAIN_CONTROL_PANEL = "MCP";
     private final String TOWER_CONTROL_PANEL = "TCP";
+    private final String UNIT_INFO_PANEL = "UIP";
     
     private final JFrame frame;
     private final JPanel cards;
@@ -49,6 +55,9 @@ public class GameView {
     private final JPanel gamePanel;
     
     public final GameArea gameArea;
+    private final JScrollPane unitScrollPane;
+    private final JTable unitInfoTable;
+    private final JPanel unitInfoPanel;
     
     private JPanel activeControlPanel;
     
@@ -161,6 +170,24 @@ public class GameView {
         
         gameArea = new GameArea();
         
+        unitInfoTable = new JTable();
+        unitScrollPane = new JScrollPane(unitInfoTable);
+        unitInfoPanel = new JPanel();
+        unitInfoPanel.setLayout(new BorderLayout(0,5));
+        unitInfoPanel.setPreferredSize(new Dimension(0, 100));
+        unitInfoPanel.add(unitScrollPane, BorderLayout.CENTER);
+        
+        JButton cancelButton = new JButton("X");
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setActiveControlPanel(MAIN_CONTROL_PANEL);
+                gameArea.setSelectedBuildingPos(null);
+            }
+            
+        });
+        unitInfoPanel.add(cancelButton, BorderLayout.EAST);
+        
         towerPanel = new JPanel();
         towerPanel.setLayout(new GridLayout(0, 2));
         towerStatPanel = new JPanel();
@@ -204,8 +231,8 @@ public class GameView {
                 gameArea.setSelectedBuildingPos(null);
             }
         });
-        JButton cancelButton = new JButton("X");
-        cancelButton.addActionListener(new ActionListener() {
+        JButton cancel = new JButton("X");
+        cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setActiveControlPanel(MAIN_CONTROL_PANEL);
@@ -215,7 +242,7 @@ public class GameView {
         });
         towerControlPanel.add(upgradeTowerButton);
         towerControlPanel.add(demolishTowerButton);
-        towerControlPanel.add(cancelButton);
+        towerControlPanel.add(cancel);
         
         towerButtonPanel = new JPanel();
         towerButtonPanel.setLayout(new BoxLayout(towerButtonPanel,BoxLayout.Y_AXIS));
@@ -235,14 +262,21 @@ public class GameView {
             @Override
             public void mousePressed(MouseEvent e) {
                 Position pos = getPositionFromPoint(e.getPoint());
+                if(game.isObstacleAtPos(pos)) return;
                 if(null == chosenTower) {
+                    gameArea.setSelectedBuildingPos(pos);
                     Tower t = game.getTowerAtPos(pos);
                     if(null != t && t.getOwner() == game.getActivePlayer()) {
                         updateTowerStats(t);
                         upgradeTowerButton.setTower(t);
                         demolishTowerButton.setTower(t);
                         setActiveControlPanel(TOWER_CONTROL_PANEL);
-                        gameArea.setSelectedBuildingPos(pos);
+                    } else if(null == t) { // listing units at the position
+                        ArrayList<Unit> units = game.getUnitsAtPos(pos);
+                        unitInfoTable.setModel(new UnitInfoTableModel(units));
+                        ((CardLayout)(activeControlPanel.getLayout())).show(
+                                activeControlPanel, UNIT_INFO_PANEL);
+                        frame.pack();
                     }
                     return ;
                 }
@@ -354,6 +388,7 @@ public class GameView {
         
         activeControlPanel.add(mainControlPanel, MAIN_CONTROL_PANEL);
         activeControlPanel.add(towerPanel, TOWER_CONTROL_PANEL);
+        activeControlPanel.add(unitInfoPanel, UNIT_INFO_PANEL);
         ((CardLayout)(activeControlPanel.getLayout())).show(activeControlPanel, MAIN_CONTROL_PANEL);
         
         mainMenu.add(Box.createRigidArea(new Dimension(0, 200)));
@@ -375,6 +410,7 @@ public class GameView {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.pack();
+        frame.setLocationRelativeTo(null);
         
         timer = new GameTimer(1000.0 / FPS);
         
@@ -402,7 +438,7 @@ public class GameView {
             return ;
         }
         if(col < 12 || col > 20) {
-            System.err.println("The number of columns should be between 9 and 20");
+            System.err.println("The number of columns should be between 12 and 20");
             return;
         }
         String player1 = player1NameField.getText();

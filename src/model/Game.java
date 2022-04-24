@@ -97,6 +97,14 @@ public class Game {
         }
         return pos;
     }
+    public boolean isObstacleAtPos(Position pos) {
+        for(Obstacle o : obstacles) {
+            if(pos.equals(o.getPosition())) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     /**
      * Adds an unit to the game, the active player is the owner
@@ -171,6 +179,15 @@ public class Game {
             }
         }
         return null;
+    }
+    public ArrayList<Unit> getUnitsAtPos(Position pos) {
+        ArrayList<Unit> unitsAtPos = new ArrayList<>();
+        for(Unit u : units) {
+            if(pos.equals(u.getPosition())) {
+                unitsAtPos.add(u);
+            }
+        }
+        return unitsAtPos;
     }
     
     public ArrayList<Unit> getUnits() {
