@@ -51,11 +51,13 @@ public class Unit {
      * Damages this unit
      * @param v the amount of damage
      */
-    public void takeDamage(int v) {
+    public boolean takeDamage(int v) {
         this.hp -= v;
         if(this.hp<=0) {
         	Main.gw.gameArea.game.getUnits().remove(this);
+        	return true;
         }
+        return false;
     }
     /**
      * Heals this unit

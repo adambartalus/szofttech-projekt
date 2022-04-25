@@ -384,6 +384,7 @@ public class GameView {
                     	game.getTowers().get(i).turn();
                     }
                     game.nextPlayer();
+                    game.getActivePlayer().increaseGold(500);
                     if(game.getActivePlayer().getCastleHp()<0) {
                     	gameover = true;
                     	JOptionPane.showMessageDialog(gamePanel, game.getOpponent().getName() + " Wins", "Game Over",JOptionPane.PLAIN_MESSAGE);

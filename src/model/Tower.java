@@ -37,7 +37,8 @@ public class Tower extends Building {
         		int distancey = Main.gw.gameArea.game.getUnits().get(i).getPosition().getY() - this.getPosition().getY();
         		int distance = distancex*distancex+distancey+distancey;
         		if(distance-1<range*range)
-        			Main.gw.gameArea.game.getUnits().get(i).takeDamage(damage);
+        			if(Main.gw.gameArea.game.getUnits().get(i).takeDamage(damage))
+        				this.owner.increaseGold(100);
         		if(!aoe)
         			break;
     		}
