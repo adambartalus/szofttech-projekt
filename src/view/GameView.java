@@ -286,7 +286,23 @@ public class GameView {
                     }
                     return ;
                 }
-                game.addTower(chosenTower, pos);
+                
+                boolean havepath = false;
+                game.map[pos.getX()][pos.getY()] = false;
+                Unit testunit = new StrongUnit(game.getActivePlayer().getCastlePosition());
+                testunit.findPath(game.getOpponent().getCastlePosition());
+                if(testunit.path.size()>0) {
+                	havepath = true;
+                }
+                
+                if(havepath) {
+                	game.addTower(chosenTower, pos);
+                }
+                else {
+                	game.map[pos.getX()][pos.getY()] = true;
+                }
+                
+                
                 chosenTower = null;
                 gameArea.setPointedCell(null);
             }
