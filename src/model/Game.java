@@ -20,6 +20,7 @@ public class Game {
     private final ArrayList<Obstacle> obstacles;
     private final Dimension mapDimension;
     public static boolean[][] map;
+    public Player neutral;
 
     /**
      * 
@@ -40,6 +41,7 @@ public class Game {
         generateRandomObstacles();
         map = new boolean[mapDimension.width][mapDimension.height];
         reloadObstacles();
+        neutral = new Player("",null);
     }
     /**
      * 
@@ -71,7 +73,11 @@ public class Game {
         return this.players[activePlayerIndex];
     }
     
-    private Player getOpponent() {
+    public int getActivePlayerIndex() {
+        return this.activePlayerIndex;
+    }
+    
+    public Player getOpponent() {
         return this.players[(activePlayerIndex + 1) % 2];
     }
     

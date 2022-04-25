@@ -16,12 +16,17 @@ public class Unit {
     private final int maxHp;
     public ArrayList<Position> path;
     public Player owner;
+    public int playerId;
+    public boolean ignoreObstacle;
+    public int damage;
     
     protected Unit(Position pos, int speed, int hp) {
         this.position = pos;
         this.speed = speed;
         this.hp = hp;
         this.maxHp = hp;
+        ignoreObstacle = false;
+        damage = 100;
     }
 
     public String getOwnerName() {
@@ -67,6 +72,14 @@ public class Unit {
     	for(int i = 0; (i < speed) && (path.size()>1); i++) {
     		path.remove(0);
     		position=path.get(0);
+    	}
+    	if(this.owner != Main.gw.gameArea.game.getPlayer(0) && this.position.equals(Main.gw.gameArea.game.getPlayer(0).getCastlePosition())) {
+    		Main.gw.gameArea.game.getPlayer(0).damageCastleHp(damage);
+    		Main.gw.gameArea.game.getUnits().remove(this);
+    	}
+    	if(this.owner != Main.gw.gameArea.game.getPlayer(1) && this.position.equals(Main.gw.gameArea.game.getPlayer(1).getCastlePosition())) {
+    		Main.gw.gameArea.game.getPlayer(1).damageCastleHp(damage);
+    		Main.gw.gameArea.game.getUnits().remove(this);
     	}
     }
     /**
@@ -212,7 +225,7 @@ public class Unit {
     			Node child = new Node(currentNode,currentNode.g+1,posE);
     			child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
     			child.f = child.g + child.h;
-    			if(Game.map[child.pos.getX()][child.pos.getY()])
+    			if(Game.map[child.pos.getX()][child.pos.getY()] || ignoreObstacle)
     				openNodes.add(child);
     			else
     				closedNodes.add(child);

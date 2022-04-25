@@ -75,4 +75,8 @@ public class Player {
     public int getCastleHp() {
         return castle.getHp();
     }
+    public void damageCastleHp(int dmg) {
+        castle.setHp(castle.getHp()-dmg);
+        
+    }
 }

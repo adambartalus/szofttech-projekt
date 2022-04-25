@@ -11,11 +11,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Random;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -83,9 +86,12 @@ public class GameView {
     
     private final int FPS = 60;
     private final Timer timer;
+    
+    private boolean gameover = false;
+    private Random r;
 
     public GameView() {
-        
+    	r = new Random();
         frame = new JFrame();
         frame.setLayout(new BorderLayout(0, 5));
         cardLayout = new CardLayout();
@@ -353,14 +359,31 @@ public class GameView {
         turnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	game.reloadObstacles();
-                for(int i = 0; i < game.getUnits().size();i++) {
-                	game.getUnits().get(i).step();
-                }
-                for(int i = 0; i < game.getTowers().size();i++) {
-                	game.getTowers().get(i).turn();
-                }
-                game.nextPlayer();
+            	if(!gameover) {
+            		game.reloadObstacles();
+                    for(int i = 0; i < game.getUnits().size();i++) {
+                    	game.getUnits().get(i).step();
+                    }
+                    for(int i = 0; i < game.getTowers().size();i++) {
+                    	game.getTowers().get(i).turn();
+                    }
+                    game.nextPlayer();
+                    if(game.getActivePlayer().getCastleHp()<0) {
+                    	gameover = true;
+                    	JOptionPane.showMessageDialog(gamePanel, game.getOpponent().getName() + " Wins", "Game Over",JOptionPane.PLAIN_MESSAGE);
+                    }
+                    for(int i = 0; i < game.getMapDimension().width; i++) {
+                    	for(int j = 0; j < game.getMapDimension().height; j++) {
+                    		if(r.nextInt(1000)<1 && game.map[i][j]) {
+                            	Unit newunit = new StrongUnit(new Position(i,j));
+                            	newunit.owner = game.neutral;
+                            	newunit.findPath(game.getActivePlayer().getCastlePosition());
+                            	game.getUnits().add(newunit);
+                            }
+                        }
+                    }
+                    
+            	}
             }
         });
         turnButton.setPreferredSize(new Dimension(160,30));
@@ -422,6 +445,7 @@ public class GameView {
         towerRangeLabel.setText("Range: " + t.getRange());
     }
     private void startNewGame() {
+    	gameover = false;
         int row, col;
         try {
             row = Integer.parseInt(this.rowField.getText());
