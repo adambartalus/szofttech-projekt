@@ -31,17 +31,20 @@ public class Tower extends Building {
     }
     
     public void turn() {
+        Unit cUnit;
     	for(int i = 0; i < Main.gw.gameArea.game.getUnits().size(); i++) {
-    		if(this.getOwner() != Main.gw.gameArea.game.getUnits().get(i).owner){
-        		int distancex = Main.gw.gameArea.game.getUnits().get(i).getPosition().getX() - this.getPosition().getX();
-        		int distancey = Main.gw.gameArea.game.getUnits().get(i).getPosition().getY() - this.getPosition().getY();
-        		int distance = distancex*distancex+distancey+distancey;
-        		if(distance-1<range*range)
-        			if(Main.gw.gameArea.game.getUnits().get(i).takeDamage(damage))
-        				this.owner.increaseGold(100);
-        		if(!aoe)
-        			break;
-    		}
+            cUnit = Main.gw.gameArea.game.getUnits().get(i);
+            if(this.getOwner() != cUnit.owner){
+                int distancex = Math.abs(cUnit.getPosition().getX() - this.getPosition().getX());
+                int distancey = Math.abs(cUnit.getPosition().getY() - this.getPosition().getY());
+                if(distancex <= range && distancey <= range) {
+                    if(cUnit.takeDamage(damage))
+                        this.owner.increaseGold(100);
+                    Main.gw.gameArea.game.addTowerShot(new TowerShot(this, cUnit));
+                }
+                if(!aoe)
+                    break;
+            }
     	}
     }
 }

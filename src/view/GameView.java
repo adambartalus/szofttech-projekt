@@ -380,6 +380,7 @@ public class GameView {
                     for(int i = 0; i < game.getUnits().size();i++) {
                     	game.getUnits().get(i).step();
                     }
+                    game.clearTowerShots();
                     for(int i = 0; i < game.getTowers().size();i++) {
                     	game.getTowers().get(i).turn();
                     }

@@ -21,6 +21,7 @@ public class Game {
     private final Dimension mapDimension;
     public static boolean[][] map;
     public Player neutral;
+    private final ArrayList<TowerShot> towerShots;
 
     /**
      * 
@@ -37,6 +38,7 @@ public class Game {
         this.units = new ArrayList<>();
         this.towers = new ArrayList<>();
         this.obstacles = new ArrayList<>();
+        this.towerShots = new ArrayList<>();
         this.mapDimension = d;
         generateRandomObstacles();
         map = new boolean[mapDimension.width][mapDimension.height];
@@ -49,6 +51,15 @@ public class Game {
      */
     public Game(Dimension d) {
         this(d, "Player1", "Player2");
+    }
+    public void addTowerShot(TowerShot ts) {
+        towerShots.add(ts);
+    }
+    public void clearTowerShots() {
+        towerShots.clear();
+    }
+    public ArrayList<TowerShot> getTowerShots() {
+        return towerShots;
     }
     public void reloadObstacles() {
     	for(int i = 0; i < mapDimension.width; i++) {

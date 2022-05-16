@@ -9,6 +9,7 @@ import java.awt.Image;
 import javax.swing.JPanel;
 import model.Game;
 import model.Position;
+import model.TowerShot;
 import model.Unit;
 import res.ResourceLoader;
 
@@ -34,12 +35,9 @@ public class GameArea extends JPanel{
      * @param game the object storing the game parameters
      */
     public GameArea(Game game) {
+        this();
         this.game = game;
-        try {
-            grass_tile = ResourceLoader.loadImage("res/grass_tile.png");
-        } catch(Exception e) {
-            
-        }
+        
         adjustSize();
     }
     public void setGame(Game g) {
@@ -158,6 +156,17 @@ public class GameArea extends JPanel{
                     selectedBuildingPos.getY() * Game.cellSize,
                     Game.cellSize,
                     Game.cellSize
+            );
+        }
+        //tower shot lines
+        g2.setColor(Color.BLACK);
+        for(TowerShot ts : game.getTowerShots()) {
+            if(ts.getUnit().getHp() <= 0) continue;
+            g2.drawLine(
+                ts.getTower().getPosition().getX() * Game.cellSize + Game.cellSize / 2,
+                ts.getTower().getPosition().getY() * Game.cellSize + Game.cellSize / 2,
+                ts.getUnit().getPosition().getX() * Game.cellSize + Game.cellSize / 2,
+                ts.getUnit().getPosition().getY() * Game.cellSize + Game.cellSize / 2
             );
         }
     }
