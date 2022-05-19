@@ -25,5 +25,17 @@
     <target name="run" depends="jar">
         <java jar="build/jar/TowerDefense.jar" fork="true"/>
     </target>
+	
+	<target name="test" depends="compile">
+        <junit haltonfailure="no">
+		
+			
+			<batchtest fork="yes">
+				<fileset dir="test">
+					<include name="**/*Test.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+    </target>
 
 </project>
