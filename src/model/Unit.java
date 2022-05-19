@@ -19,6 +19,7 @@ public class Unit {
     public int playerId;
     public boolean ignoreObstacle;
     public int damage;
+    public char type;
     
     protected Unit(Position pos, int speed, int hp) {
         this.position = pos;
@@ -27,6 +28,7 @@ public class Unit {
         this.maxHp = hp;
         ignoreObstacle = false;
         damage = 100;
+        type = 'b';
     }
 
     public String getOwnerName() {

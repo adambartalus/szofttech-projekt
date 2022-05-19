@@ -11,6 +11,7 @@ public class LongRangeTower extends Tower {
         damageinc = 10;
         rangeinc = 2;
         upgradecost = 100;
+        type = 'l';
     }
     
 }

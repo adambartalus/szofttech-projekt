@@ -7,6 +7,7 @@ public class Building {
     
     private final Position position;
     protected final Player owner;
+    public char type;
     
     protected Building(Position pos, Player player) {
         this.position = pos;

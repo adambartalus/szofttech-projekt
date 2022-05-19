@@ -11,6 +11,7 @@ public class BasicTower extends Tower {
         damageinc = 10;
         rangeinc = 1;
         upgradecost = 100;
+        type = 'b';
     }
     
 }

@@ -8,6 +8,10 @@ public class ShortRangeTower extends Tower {
     
     public ShortRangeTower(Position pos, Player player) {
         super(1, 90, pos, player);
+        damageinc = 30;
+        rangeinc = 0;
+        upgradecost = 100;
+        type = 's';
     }
     
 }

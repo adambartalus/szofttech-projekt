@@ -10,5 +10,6 @@ public class StrongUnit extends Unit {
     public StrongUnit(Position pos) {
         super(pos, 1, 500);
         damage = 200;
+        type = 's';
     }
 }

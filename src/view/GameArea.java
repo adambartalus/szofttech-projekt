@@ -21,12 +21,52 @@ public class GameArea extends JPanel{
     public Game game;
     
     private Image grass_tile;
+    private Image mountain_tile;
+    private Image unit_basic_red;
+    private Image unit_strong_red;
+    private Image unit_fast_red;
+    private Image unit_flying_red;
+    private Image castle_red;
+    private Image tower_short_red;
+    private Image tower_basic_red;
+    private Image tower_long_red;
+    private Image mine_red;
+    private Image unit_basic_blue;
+    private Image unit_strong_blue;
+    private Image unit_fast_blue;
+    private Image unit_flying_blue;
+    private Image castle_blue;
+    private Image tower_short_blue;
+    private Image tower_basic_blue;
+    private Image tower_long_blue;
+    private Image mine_blue;
+    private Image unit_strong_black;
     private Position pointedCell;
     private Position selectedBuildingPos;
    
     public GameArea() {
         try {
             grass_tile = ResourceLoader.loadImage("res/grass_tile.png");
+            mountain_tile = ResourceLoader.loadImage("res/mountain.png");
+            unit_basic_red = ResourceLoader.loadImage("res/redbasic.png");
+            unit_strong_red = ResourceLoader.loadImage("res/redstrong.png");
+            unit_fast_red = ResourceLoader.loadImage("res/redknight.png");
+            unit_flying_red = ResourceLoader.loadImage("res/reddragon.png");
+            castle_red = ResourceLoader.loadImage("res/castlered.png");
+            mine_red = ResourceLoader.loadImage("res/minered.png");
+            tower_short_red = ResourceLoader.loadImage("res/towershortred.png");
+            tower_basic_red = ResourceLoader.loadImage("res/towerbasicred.png");
+            tower_long_red = ResourceLoader.loadImage("res/towerlongred.png");
+            unit_basic_blue = ResourceLoader.loadImage("res/bluebasic.png");
+            unit_strong_blue = ResourceLoader.loadImage("res/bluestrong.png");
+            unit_fast_blue = ResourceLoader.loadImage("res/blueknight.png");
+            unit_flying_blue = ResourceLoader.loadImage("res/bluedragon.png");
+            castle_blue = ResourceLoader.loadImage("res/castleblue.png");
+            mine_blue = ResourceLoader.loadImage("res/mineblue.png");
+            tower_short_blue = ResourceLoader.loadImage("res/towershortblue.png");
+            tower_basic_blue = ResourceLoader.loadImage("res/towerbasicblue.png");
+            tower_long_blue = ResourceLoader.loadImage("res/towerlongblue.png");
+            unit_strong_black = ResourceLoader.loadImage("res/neutralstrong.png");
         } catch(Exception e) {
             
         }
@@ -92,75 +132,122 @@ public class GameArea extends JPanel{
         Position pos;
         g2.setFont(new Font("", Font.PLAIN, 25));
         
-        //first player's castle
+      //first player's castle
         pos = game.getPlayer(0).getCastlePosition();
-        g2.setColor(Color.blue);
-        g2.fillRect(pos.getX() * Game.cellSize, pos.getY() * Game.cellSize, Game.cellSize, Game.cellSize);
-        g2.setColor(Color.black);
-        g2.drawString("K", pos.getX() * Game.cellSize + 15, pos.getY() * Game.cellSize + 32);
+        g2.drawImage(
+                castle_blue,
+                pos.getX() * Game.cellSize,
+                pos.getY() * Game.cellSize,
+                Game.cellSize,
+                Game.cellSize,
+                null
+            );
+
         //first player's towers
         for(Position p : game.getPlayer(0).getTowerPositions()) {
-            g2.setColor(Color.blue);
-            g2.fillRect(
-                    p.getX() * Game.cellSize,
-                    p.getY() * Game.cellSize,
+            Image toDraw = tower_basic_blue;
+            if(game.getTowerAtPos(p).type=='s')
+            	toDraw = tower_short_blue;
+            else if(game.getTowerAtPos(p).type=='l')
+            	toDraw = tower_long_blue;
+            g2.drawImage(
+                    toDraw,
+                    p.getX() *Game.cellSize,
+                    p.getY() *Game.cellSize,
                     Game.cellSize,
-                    Game.cellSize
-            );
-            g2.setColor(Color.black);
-            g2.drawString("T", p.getX() * Game.cellSize + 15, p.getY() * Game.cellSize + 32);
+                    Game.cellSize,
+                    null
+                );
         }
         //second player's castle
         pos = game.getPlayer(1).getCastlePosition();
-        g2.setColor(Color.red);
-        g2.fillRect(pos.getX() * Game.cellSize, pos.getY() * Game.cellSize, Game.cellSize, Game.cellSize);
-        g2.setColor(Color.black);
-        g2.drawString("K", pos.getX() * Game.cellSize + 15, pos.getY() * Game.cellSize + 32);
+        g2.drawImage(
+                castle_red,
+                pos.getX() *Game.cellSize,
+                pos.getY() *Game.cellSize,
+                Game.cellSize,
+                Game.cellSize,
+                null
+            );
         //second player's towers
         for(Position p : game.getPlayer(1).getTowerPositions()) {
-            g2.setColor(Color.red);
-            g2.fillRect(
-                    p.getX() * Game.cellSize,
-                    p.getY() * Game.cellSize,
+        	Image toDraw = tower_basic_red;
+            if(game.getTowerAtPos(p).type=='s')
+            	toDraw = tower_short_red;
+            else if(game.getTowerAtPos(p).type=='l')
+            	toDraw = tower_long_red;
+            g2.drawImage(
+                    toDraw,
+                    p.getX() *Game.cellSize,
+                    p.getY() *Game.cellSize,
                     Game.cellSize,
-                    Game.cellSize
-            );
-            g2.setColor(Color.black);
-            g2.drawString("T", p.getX() * Game.cellSize + 15, p.getY() * Game.cellSize + 32);
+                    Game.cellSize,
+                    null
+                );
         }
         //obstacles
-        g2.setColor(new Color(139, 69, 19));
         for(Position p : game.getObstaclePositions()) {
-            g2.fillRect(
+        	g2.drawImage(
+                    mountain_tile,
                     p.getX() * Game.cellSize,
                     p.getY() * Game.cellSize,
                     Game.cellSize,
-                    Game.cellSize
-            );
+                    Game.cellSize,
+                    null
+                );
         }
+        //drawing units
+        for(Unit u : this.game.getUnits()) {
+        	Image toDraw = unit_strong_black;
+            if(u.owner == game.getPlayer(0)) {
+            	if(u.type == 'o')
+            		toDraw = unit_flying_blue;
+            	else if(u.type == 's')
+            		toDraw = unit_strong_blue;
+            	else if(u.type == 'f')
+            		toDraw = unit_fast_blue;
+            	else
+            		toDraw = unit_basic_blue;
+            }
+            else if(u.owner == game.getPlayer(1)) {
+            	if(u.type == 'o')
+            		toDraw = unit_flying_red;
+            	else if(u.type == 's')
+            		toDraw = unit_strong_red;
+            	else if(u.type == 'f')
+            		toDraw = unit_fast_red;
+            	else
+            		toDraw = unit_basic_red;
+            }
+            	
+        	g2.drawImage(
+                    toDraw,
+                    u.getPosition().getX() *Game.cellSize,
+                    u.getPosition().getY() *Game.cellSize,
+                    Game.cellSize,
+                    Game.cellSize,
+                    null
+                );
+        }
+        
         //goldmines
         
         for(Position p : game.getGoldminePositions()) {
-            g2.setColor(new Color(0, 69, 19));
-            g2.fillRect(
+        	Image toDraw;
+        	if(game.getGoldmineAtPos(p).getOwner()== game.getPlayer(0))
+        		toDraw = mine_blue;
+        	else
+        		toDraw = mine_red;
+            g2.drawImage(
+                    toDraw,
                     p.getX() * Game.cellSize,
                     p.getY() * Game.cellSize,
                     Game.cellSize,
-                    Game.cellSize
-            );
-            g2.setColor(Color.black);
-            g2.drawString("G", p.getX() * Game.cellSize + 15, p.getY() * Game.cellSize + 32);
+                    Game.cellSize,
+                    null
+                );
         }
-        //drawing units
-        g2.setColor(Color.BLACK);
-        for(Unit u : this.game.getUnits()) {
-            g2.fillRect(
-                u.getPosition().getX() * Game.cellSize,
-                u.getPosition().getY() * Game.cellSize,
-                Game.cellSize,
-                Game.cellSize
-            );
-        }
+        
         //outline for selected cell
         if(null != selectedBuildingPos) {
             g2.setColor(Color.YELLOW);

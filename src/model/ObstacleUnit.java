@@ -11,5 +11,6 @@ public class ObstacleUnit extends Unit {
         
         super(pos, 1, 350);
         ignoreObstacle = true;
+        type = 'o';
     }
 }
