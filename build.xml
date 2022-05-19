@@ -29,7 +29,12 @@
 	<target name="test" depends="compile">
         <junit haltonfailure="no">
 		
+			<classpath location="build/classes" />
+			<classpath location="build/test/classes" />
+			<classpath location="/usr/share/java/junit4.jar" />
+			<classpath location="/usr/share/java/hamcrest-core.jar" />
 			
+			<formatter type="plain" />
 			<batchtest fork="yes">
 				<fileset dir="test">
 					<include name="**/*Test.java" />
