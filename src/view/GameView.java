@@ -27,6 +27,7 @@ import javax.swing.Timer;
 import model.BasicTower;
 import model.FastUnit;
 import model.Game;
+import model.Goldmine;
 import model.LongRangeTower;
 import model.ObstacleUnit;
 import model.Position;
@@ -82,6 +83,7 @@ public class GameView {
     private final JLabel statLabel;
     
     private Class chosenTower;
+    private boolean goldMineSelected = false;
     private Game game;
     
     private final int FPS = 60;
@@ -258,7 +260,7 @@ public class GameView {
         gameArea.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                if(null == chosenTower) {
+                if(null == chosenTower && !goldMineSelected) {
                     return ;
                 }
                 gameArea.setPointedCell(getPositionFromPoint(e.getPoint()));
@@ -269,6 +271,11 @@ public class GameView {
             public void mousePressed(MouseEvent e) {
                 Position pos = getPositionFromPoint(e.getPoint());
                 if(game.isObstacleAtPos(pos)) return;
+                if(goldMineSelected) {
+                    game.addGoldmine(pos);
+                    goldMineSelected = false;
+                    return;
+                }
                 if(null == chosenTower) {
                     gameArea.setSelectedBuildingPos(pos);
                     Tower t = game.getTowerAtPos(pos);
@@ -277,7 +284,7 @@ public class GameView {
                         upgradeTowerButton.setTower(t);
                         demolishTowerButton.setTower(t);
                         setActiveControlPanel(TOWER_CONTROL_PANEL);
-                    } else if(null == t) { // listing units at the position
+                    } else if(null == t && null == game.getGoldmineAtPos(pos)) { // listing units at the position
                         ArrayList<Unit> units = game.getUnitsAtPos(pos);
                         unitInfoTable.setModel(new UnitInfoTableModel(units));
                         ((CardLayout)(activeControlPanel.getLayout())).show(
@@ -292,14 +299,14 @@ public class GameView {
                 Unit testunit = new StrongUnit(game.getActivePlayer().getCastlePosition());
                 testunit.findPath(game.getOpponent().getCastlePosition());
                 if(testunit.path.size()>0) {
-                	havepath = true;
+                    havepath = true;
                 }
                 
                 if(havepath) {
-                	game.addTower(chosenTower, pos);
+                    game.addTower(chosenTower, pos);
                 }
                 else {
-                	game.map[pos.getX()][pos.getY()] = true;
+                    game.map[pos.getX()][pos.getY()] = true;
                 }
                 
                 
@@ -307,7 +314,13 @@ public class GameView {
                 gameArea.setPointedCell(null);
             }
         });
-        
+        JButton gMine = new JButton("Goldmine (" + Goldmine.COST + "g)" );
+        gMine.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                goldMineSelected = true;
+            }
+        });
         /**
          * Button for spawning long range tower
          */
@@ -385,6 +398,7 @@ public class GameView {
                     	game.getTowers().get(i).turn();
                     }
                     game.nextPlayer();
+                    game.goldmineTurn();
                     game.getActivePlayer().increaseGold(500);
                     if(game.getActivePlayer().getCastleHp()<0) {
                     	gameover = true;
@@ -400,7 +414,6 @@ public class GameView {
                             }
                         }
                     }
-                    
             	}
             }
         });
@@ -413,6 +426,8 @@ public class GameView {
         towerButtonPanel.add(basicTower);
         towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         towerButtonPanel.add(srTower);
+        towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        towerButtonPanel.add(gMine);
         
         unitButtonPanel.add(sUnit);
         unitButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));

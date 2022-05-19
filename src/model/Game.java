@@ -18,6 +18,7 @@ public class Game {
     private final ArrayList<Unit> units;
     private final ArrayList<Tower> towers;
     private final ArrayList<Obstacle> obstacles;
+    private final ArrayList<Goldmine> goldmines;
     private final Dimension mapDimension;
     public static boolean[][] map;
     public Player neutral;
@@ -39,6 +40,7 @@ public class Game {
         this.towers = new ArrayList<>();
         this.obstacles = new ArrayList<>();
         this.towerShots = new ArrayList<>();
+        this.goldmines = new ArrayList<>();
         this.mapDimension = d;
         generateRandomObstacles();
         map = new boolean[mapDimension.width][mapDimension.height];
@@ -114,6 +116,13 @@ public class Game {
         }
         return pos;
     }
+    public ArrayList<Position> getGoldminePositions() {
+        ArrayList<Position> pos = new ArrayList<>();
+        for(Goldmine g : goldmines) {
+            pos.add(new Position(g.getPosition()));
+        }
+        return pos;
+    }
     public boolean isObstacleAtPos(Position pos) {
         for(Obstacle o : obstacles) {
             if(pos.equals(o.getPosition())) {
@@ -122,7 +131,20 @@ public class Game {
         }
         return false;
     }
-    
+    public void addGoldmine(Position pos) {
+        if(getActivePlayer().getGold() < Goldmine.COST) {
+            System.err.println("Not enough gold!");
+            return;
+        }
+        Goldmine g = new Goldmine(pos, getActivePlayer());
+        goldmines.add(g);
+        getActivePlayer().decreaseGold(Goldmine.COST);
+    }
+    public void goldmineTurn() {
+        for(Goldmine g : goldmines) {
+            g.turn();
+        }
+    }
     /**
      * Adds an unit to the game, the active player is the owner
      * @param u the unit to add
@@ -188,6 +210,14 @@ public class Game {
     public void demolishTower(Tower t) {
         towers.remove(t);
         t.getOwner().removeTower(t);
+    }
+    public Goldmine getGoldmineAtPos(Position pos) {
+        for(Goldmine g : goldmines) {
+            if(g.getPosition().equals(pos)) {
+                return g;
+            }
+        }
+        return null;
     }
     public Tower getTowerAtPos(Position pos) {
         for(Tower t : towers) {
