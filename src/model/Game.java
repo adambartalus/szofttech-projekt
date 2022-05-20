@@ -23,6 +23,7 @@ public class Game {
     public static boolean[][] map;
     public Player neutral;
     private final ArrayList<TowerShot> towerShots;
+    public ArrayList<ActiveSpell> activeSpells;
 
     /**
      * 
@@ -41,6 +42,7 @@ public class Game {
         this.obstacles = new ArrayList<>();
         this.towerShots = new ArrayList<>();
         this.goldmines = new ArrayList<>();
+        this.activeSpells = new ArrayList<>();
         this.mapDimension = d;
         generateRandomObstacles();
         map = new boolean[mapDimension.width][mapDimension.height];

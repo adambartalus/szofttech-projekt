@@ -12,6 +12,7 @@ public class LongRangeTower extends Tower {
         rangeinc = 2;
         upgradecost = 100;
         type = 'l';
+        freeze = false;
     }
     
 }

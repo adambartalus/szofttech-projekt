@@ -10,11 +10,13 @@ public class Tower extends Building {
     protected int damageinc;
     public int upgradecost;
     public boolean aoe;
+    public boolean freeze = false;
     
     protected Tower(int range, int damage, Position pos, Player player) {
         super(pos, player);
         this.range = range;
         this.damage = damage;
+        freeze = false;
     }
 
     public int getRange() {
@@ -30,21 +32,26 @@ public class Tower extends Building {
         damage += damageinc;
     }
     
-    public void turn() {
-        Unit cUnit;
-    	for(int i = 0; i < Main.gw.gameArea.game.getUnits().size(); i++) {
-            cUnit = Main.gw.gameArea.game.getUnits().get(i);
-            if(this.getOwner() != cUnit.owner){
-                int distancex = Math.abs(cUnit.getPosition().getX() - this.getPosition().getX());
-                int distancey = Math.abs(cUnit.getPosition().getY() - this.getPosition().getY());
-                if(distancex <= range && distancey <= range) {
-                    if(cUnit.takeDamage(damage))
-                        this.owner.increaseGold(100);
-                    Main.gw.gameArea.game.addTowerShot(new TowerShot(this, cUnit));
+    public void turn(Game g) {
+    	if(!freeze)
+    	{
+    		Unit cUnit;
+        	for(int i = 0; i < g.getUnits().size(); i++) {
+                cUnit = g.getUnits().get(i);
+                if(this.getOwner() != cUnit.owner){
+                    int distancex = Math.abs(cUnit.getPosition().getX() - this.getPosition().getX());
+                    int distancey = Math.abs(cUnit.getPosition().getY() - this.getPosition().getY());
+                    if(distancex <= range && distancey <= range) {
+                        if(cUnit.takeDamage(damage))
+                            this.owner.increaseGold(100);
+                        g.addTowerShot(new TowerShot(this, cUnit));
+                    }
+                    if(!aoe)
+                        break;
                 }
-                if(!aoe)
-                    break;
-            }
+        	}
     	}
+    	else
+    		freeze = false;
     }
 }

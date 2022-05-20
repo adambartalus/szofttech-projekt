@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import javax.swing.JPanel;
+
+import model.ActiveSpell;
 import model.Game;
 import model.Position;
 import model.TowerShot;
@@ -41,6 +43,9 @@ public class GameArea extends JPanel{
     private Image tower_long_blue;
     private Image mine_blue;
     private Image unit_strong_black;
+    private Image meteor;
+    private Image freeze;
+    private Image heal;
     private Position pointedCell;
     private Position selectedBuildingPos;
    
@@ -67,6 +72,9 @@ public class GameArea extends JPanel{
             tower_basic_blue = ResourceLoader.loadImage("res/towerbasicblue.png");
             tower_long_blue = ResourceLoader.loadImage("res/towerlongblue.png");
             unit_strong_black = ResourceLoader.loadImage("res/neutralstrong.png");
+            meteor = ResourceLoader.loadImage("res/explosion.png");
+            freeze = ResourceLoader.loadImage("res/ice.png");
+            heal = ResourceLoader.loadImage("res/heal.png");
         } catch(Exception e) {
             
         }
@@ -158,6 +166,15 @@ public class GameArea extends JPanel{
                     Game.cellSize,
                     null
                 );
+            if(game.getTowerAtPos(p).freeze)
+	            g2.drawImage(
+	                    freeze,
+	                    p.getX() *Game.cellSize,
+	                    p.getY() *Game.cellSize,
+	                    Game.cellSize,
+	                    Game.cellSize,
+	                    null
+	                );
         }
         //second player's castle
         pos = game.getPlayer(1).getCastlePosition();
@@ -184,6 +201,15 @@ public class GameArea extends JPanel{
                     Game.cellSize,
                     null
                 );
+            if(game.getTowerAtPos(p).freeze)
+	            g2.drawImage(
+	                    freeze,
+	                    p.getX() *Game.cellSize,
+	                    p.getY() *Game.cellSize,
+	                    Game.cellSize,
+	                    Game.cellSize,
+	                    null
+	                );
         }
         //obstacles
         for(Position p : game.getObstaclePositions()) {
@@ -246,6 +272,37 @@ public class GameArea extends JPanel{
                     Game.cellSize,
                     null
                 );
+        }
+        
+        //Spell effects
+        for(ActiveSpell as : game.activeSpells) {
+        	if(as.type == 'f')
+	        	g2.drawImage(
+	                    freeze,
+	                    as.pos.getX() * Game.cellSize,
+	                    as.pos.getY() * Game.cellSize,
+	                    Game.cellSize,
+	                    Game.cellSize,
+	                    null
+	                );
+        	else if(as.type == 'h')
+	        	g2.drawImage(
+	                    heal,
+	                    as.pos.getX() * Game.cellSize,
+	                    as.pos.getY() * Game.cellSize,
+	                    Game.cellSize,
+	                    Game.cellSize,
+	                    null
+	                );
+        	else if(as.type == 'm')
+	        	g2.drawImage(
+	                    meteor,
+	                    as.pos.getX() * Game.cellSize,
+	                    as.pos.getY() * Game.cellSize,
+	                    Game.cellSize*3,
+	                    Game.cellSize*3,
+	                    null
+	                );
         }
         
         //outline for selected cell

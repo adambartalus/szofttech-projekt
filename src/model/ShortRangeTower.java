@@ -12,6 +12,7 @@ public class ShortRangeTower extends Tower {
         rangeinc = 0;
         upgradecost = 100;
         type = 's';
+        freeze = false;
     }
     
 }
