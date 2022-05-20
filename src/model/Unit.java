@@ -21,7 +21,7 @@ public class Unit {
     public int damage;
     public char type;
     
-    protected Unit(Position pos, int speed, int hp) {
+    public Unit(Position pos, int speed, int hp) {
         this.position = pos;
         this.speed = speed;
         this.hp = hp;
@@ -67,6 +67,9 @@ public class Unit {
      */
     public void heal(int v) {
         this.hp += v;
+        if(hp > maxHp) {
+            hp = maxHp;
+        }
     }
     /**
      * Moves this unit to the next position along the {@code path speed } times

@@ -7,7 +7,7 @@ public class HealSpell implements Spell {
 	public void Effect(Position pos, Game game, Player player) {
 		for(int j = 0; j < game.getUnitsAtPos(pos).size(); j++)
 			if(game.getUnitsAtPos(pos).get(j).owner == player)
-				game.getUnitsAtPos(pos).get(j).takeDamage(-500);
+				game.getUnitsAtPos(pos).get(j).heal(500);
 		game.activeSpells.add(new ActiveSpell('h',pos));
 	}
 }
