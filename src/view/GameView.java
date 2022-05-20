@@ -26,12 +26,16 @@ import javax.swing.JTextField;
 import javax.swing.Timer;
 import model.BasicTower;
 import model.FastUnit;
+import model.FreezeSpell;
 import model.Game;
 import model.Goldmine;
+import model.HealSpell;
 import model.LongRangeTower;
+import model.MeteorSpell;
 import model.ObstacleUnit;
 import model.Position;
 import model.ShortRangeTower;
+import model.Spell;
 import model.StrongUnit;
 import model.Tower;
 import model.Unit;
@@ -91,6 +95,7 @@ public class GameView {
     
     private boolean gameover = false;
     private Random r;
+    private Spell selectedSpell = null;
 
     public GameView() {
     	r = new Random();
@@ -270,6 +275,10 @@ public class GameView {
             @Override
             public void mousePressed(MouseEvent e) {
                 Position pos = getPositionFromPoint(e.getPoint());
+                if(selectedSpell !=null) {
+                	selectedSpell.Effect(pos, game, game.getActivePlayer());
+                	selectedSpell = null;
+                }
                 if(game.isObstacleAtPos(pos)) return;
                 if(goldMineSelected) {
                     game.addGoldmine(pos);
@@ -308,8 +317,7 @@ public class GameView {
                 else {
                     game.map[pos.getX()][pos.getY()] = true;
                 }
-                
-                
+
                 chosenTower = null;
                 gameArea.setPointedCell(null);
             }
@@ -351,6 +359,38 @@ public class GameView {
                 chosenTower = ShortRangeTower.class;
             }
         });
+        
+        JButton freezeButton = new JButton("Freeze Spell (" + FreezeSpell.cost + "g)" );
+        freezeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(game.getActivePlayer().getGold()>=FreezeSpell.cost) {
+                	game.getActivePlayer().decreaseGold(FreezeSpell.cost);
+                	selectedSpell = new FreezeSpell();
+                }
+            }
+        });
+        JButton meteorButton = new JButton("Meteor Spell (" + MeteorSpell.cost + "g)" );
+        meteorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(game.getActivePlayer().getGold()>=MeteorSpell.cost) {
+                	game.getActivePlayer().decreaseGold(MeteorSpell.cost);
+                	selectedSpell = new MeteorSpell();
+                }
+            }
+        });
+        JButton healButton = new JButton("Heal Spell (" + HealSpell.cost + "g)" );
+        healButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(game.getActivePlayer().getGold()>=HealSpell.cost) {
+                	game.getActivePlayer().decreaseGold(HealSpell.cost);
+                	selectedSpell = new HealSpell();
+                }
+            }
+        });
+        
         /**
          * Button for spawning strong unit
          */
@@ -394,8 +434,9 @@ public class GameView {
                     	game.getUnits().get(i).step();
                     }
                     game.clearTowerShots();
+                    game.activeSpells.clear();
                     for(int i = 0; i < game.getTowers().size();i++) {
-                    	game.getTowers().get(i).turn();
+                    	game.getTowers().get(i).turn(game);
                     }
                     game.nextPlayer();
                     game.goldmineTurn();
@@ -428,6 +469,12 @@ public class GameView {
         towerButtonPanel.add(srTower);
         towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         towerButtonPanel.add(gMine);
+        towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        towerButtonPanel.add(freezeButton);
+        towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        towerButtonPanel.add(meteorButton);
+        towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        towerButtonPanel.add(healButton);
         
         unitButtonPanel.add(sUnit);
         unitButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));

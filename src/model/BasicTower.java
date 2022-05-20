@@ -12,6 +12,7 @@ public class BasicTower extends Tower {
         rangeinc = 1;
         upgradecost = 100;
         type = 'b';
+        freeze = false;
     }
     
 }
