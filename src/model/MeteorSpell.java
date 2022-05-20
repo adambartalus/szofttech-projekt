@@ -20,7 +20,7 @@ public class MeteorSpell implements Spell {
             ArrayList<Unit> unitsAtPosI = game.getUnitsAtPos(positions.get(i));
             for(int j = 0; j < unitsAtPosI.size(); j++) {
                 if(unitsAtPosI.get(j).owner != player) {
-                    unitsAtPosI.get(j).takeDamage(500);
+                    unitsAtPosI.get(j).takeDamage(300);
                 }
             }
         }
