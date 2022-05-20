@@ -18,10 +18,12 @@ public class MeteorSpell implements Spell {
 
         for(int i = 0; i < positions.size(); i++) {
             ArrayList<Unit> unitsAtPosI = game.getUnitsAtPos(positions.get(i));
-            for(int j = 0; j < unitsAtPosI.size(); j++)
-                if(unitsAtPosI.get(j).owner != player)
+            for(int j = 0; j < unitsAtPosI.size(); j++) {
+                if(unitsAtPosI.get(j).owner != player) {
                     unitsAtPosI.get(j).takeDamage(500);
-            game.activeSpells.add(new ActiveSpell('m',pos));
+                }
+            }
         }
+        game.activeSpells.add(new ActiveSpell('m',pos));
     }
 }

@@ -4,6 +4,7 @@ manifest.mf
 # NetBeans specific #
 nbproject/
 build/
+report/
 nbbuild/
 dist/
 nbdist/

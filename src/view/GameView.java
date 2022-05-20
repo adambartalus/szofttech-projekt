@@ -310,7 +310,7 @@ public class GameView {
                 
                 boolean havepath = false;
                 game.map[pos.getX()][pos.getY()] = false;
-                Unit testunit = new StrongUnit(game.getActivePlayer().getCastlePosition());
+                Unit testunit = new StrongUnit(game.getActivePlayer().getCastlePosition(), game);
                 testunit.findPath(game.getOpponent().getCastlePosition());
                 if(testunit.path.size()>0) {
                     havepath = true;
@@ -403,7 +403,7 @@ public class GameView {
         sUnit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameView.this.game.addUnit(new StrongUnit(game.getActivePlayer().getCastlePosition()));
+                GameView.this.game.addUnit(new StrongUnit(game.getActivePlayer().getCastlePosition(), game));
             }
         });
         /**
@@ -413,7 +413,7 @@ public class GameView {
         fUnit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameView.this.game.addUnit(new FastUnit(game.getActivePlayer().getCastlePosition()));
+                GameView.this.game.addUnit(new FastUnit(game.getActivePlayer().getCastlePosition(), game));
             }
         });
         /**
@@ -423,7 +423,7 @@ public class GameView {
         oUnit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                game.addUnit(new ObstacleUnit(game.getActivePlayer().getCastlePosition()));
+                game.addUnit(new ObstacleUnit(game.getActivePlayer().getCastlePosition(), game));
             }
         });        
         /**
@@ -453,7 +453,7 @@ public class GameView {
                     for(int i = 0; i < game.getMapDimension().width; i++) {
                     	for(int j = 0; j < game.getMapDimension().height; j++) {
                     		if(r.nextInt(1000)<1 && game.map[i][j]) {
-                            	Unit newunit = new StrongUnit(new Position(i,j));
+                            	Unit newunit = new StrongUnit(new Position(i,j), game);
                             	newunit.owner = game.neutral;
                             	newunit.findPath(game.getActivePlayer().getCastlePosition());
                             	game.getUnits().add(newunit);

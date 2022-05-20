@@ -1,4 +1,4 @@
-package test.tower;
+package tower;
 
 import java.awt.Dimension;
 import model.BasicTower;
@@ -16,7 +16,7 @@ public class TowerTest {
     public void towerShot() {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
-        Unit testunit = new StrongUnit(new Position(3,3));
+        Unit testunit = new StrongUnit(new Position(3,3), game);
         game.addUnit(testunit);
         testunit.owner = game.getPlayer(0);
         BasicTower testTower = new BasicTower(new Position (4,4),game.getPlayer(1));

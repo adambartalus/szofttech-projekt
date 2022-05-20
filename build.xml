@@ -1,12 +1,22 @@
 <project name="TowerDefense" basedir=".">
 
+	<presetdef name="javac">
+		<javac includeantruntime="false" />
+	</presetdef>
+	
     <target name="clean">
         <delete dir="build"/>
     </target>
 
     <target name="compile">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes" >
+        <javac srcdir="src" destdir="build/classes" />
+    </target>
+	
+	<target name="compileTests" depends="compile">
+        <mkdir dir="build/test/classes"/>
+        <javac srcdir="test" destdir="build/test/classes" >
+			<classpath location="build/classes" />
 			<classpath location="/usr/share/java/junit4.jar" />
 			<classpath location="/usr/share/java/hamcrest-core.jar" />
 		</javac>
@@ -29,8 +39,9 @@
         <java jar="build/jar/TowerDefense.jar" fork="true"/>
     </target>
 	
-	<target name="test" depends="compile">
-        <junit haltonfailure="no">
+	<target name="test" depends="compileTests">
+		<mkdir dir="report/" />
+        <junit printsummary="yes" haltonfailure="no">
 		
 			<classpath location="build/classes" />
 			<classpath location="build/test/classes" />
@@ -38,8 +49,8 @@
 			<classpath location="/usr/share/java/hamcrest-core.jar" />
 			
 			<formatter type="plain" />
-			<batchtest fork="yes">
-				<fileset dir="src">
+			<batchtest fork="yes" todir="report">
+				<fileset dir="test">
 					<include name="**/*Test.java" />
 				</fileset>
 			</batchtest>

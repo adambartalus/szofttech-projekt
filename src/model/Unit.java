@@ -20,8 +20,9 @@ public class Unit {
     public boolean ignoreObstacle;
     public int damage;
     public char type;
+    private final Game game;
     
-    public Unit(Position pos, int speed, int hp) {
+    public Unit(Position pos, int speed, int hp, Game g) {
         this.position = pos;
         this.speed = speed;
         this.hp = hp;
@@ -29,6 +30,7 @@ public class Unit {
         ignoreObstacle = false;
         damage = 100;
         type = 'b';
+        game = g;
     }
 
     public String getOwnerName() {
@@ -56,8 +58,8 @@ public class Unit {
     public boolean takeDamage(int v) {
         this.hp -= v;
         if(this.hp<=0) {
-        	Main.gw.gameArea.game.getUnits().remove(this);
-        	return true;
+            game.getUnits().remove(this);
+            return true;
         }
         return false;
     }
