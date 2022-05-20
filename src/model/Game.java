@@ -294,7 +294,7 @@ public class Game {
     }
     private void generateRandomObstacles() {
         Random r = new Random();
-        int num = 6 + r.nextInt(3);
+        int num = 10 + r.nextInt(4);
         int[][] cMap;
         Position p;
         while(obstacles.size() < num) {

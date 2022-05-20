@@ -288,6 +288,7 @@ public class GameView {
                 if(goldMineSelected) {
                     game.addGoldmine(pos);
                     goldMineSelected = false;
+                    gameArea.setPointedCell(null);
                     return;
                 }
                 if(null == chosenTower) {

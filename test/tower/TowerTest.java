@@ -27,4 +27,21 @@ public class TowerTest {
         testTower.turn(game);
         assertEquals(testunit.getHp(), 350);
     }
+    @Test
+    public void towerRange() {
+        Dimension d = new Dimension (10,15);
+        Game game = new Game(d, "Player1", "Player2");
+        Unit testunit = new StrongUnit(new Position(3,3), game);
+        game.addUnit(testunit);
+        testunit.owner = game.getPlayer(0);
+        
+        BasicTower testTower = new BasicTower(new Position (6,6),game.getPlayer(1));
+        game.addTower(testTower);
+        testTower.turn(game);
+        assertEquals(testunit.getHp(), 500); // out of range
+        
+        testTower.upgrade();
+        testTower.turn(game);
+        assertEquals(testunit.getHp(), 420);
+    }
 }

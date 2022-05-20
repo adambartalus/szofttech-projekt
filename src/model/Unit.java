@@ -204,7 +204,7 @@ public class Unit {
     			Node child = new Node(currentNode,currentNode.g+1,posN);
     			child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
     			child.f = child.g + child.h;
-    			if(Game.map[child.pos.getX()][child.pos.getY()])
+    			if(Game.map[child.pos.getX()][child.pos.getY()] || ignoreObstacle)
     				openNodes.add(child);
     			else
     				closedNodes.add(child);
@@ -214,7 +214,7 @@ public class Unit {
     			Node child = new Node(currentNode,currentNode.g+1,posS);
     			child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
     			child.f = child.g + child.h;
-    			if(Game.map[child.pos.getX()][child.pos.getY()])
+    			if(Game.map[child.pos.getX()][child.pos.getY()] || ignoreObstacle)
     				openNodes.add(child);
     			else
     				closedNodes.add(child);
@@ -224,7 +224,7 @@ public class Unit {
     			Node child = new Node(currentNode,currentNode.g+1,posW);
     			child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
     			child.f = child.g + child.h;
-    			if(Game.map[child.pos.getX()][child.pos.getY()])
+    			if(Game.map[child.pos.getX()][child.pos.getY()] || ignoreObstacle)
     				openNodes.add(child);
     			else
     				closedNodes.add(child);
