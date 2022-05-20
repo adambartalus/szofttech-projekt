@@ -6,7 +6,10 @@
 
     <target name="compile">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" >
+			<classpath location="/usr/share/java/junit4.jar" />
+			<classpath location="/usr/share/java/hamcrest-core.jar" />
+		</javac>
     </target>
 
     <target name="jar" depends="compile">
@@ -36,7 +39,7 @@
 			
 			<formatter type="plain" />
 			<batchtest fork="yes">
-				<fileset dir="test">
+				<fileset dir="src">
 					<include name="**/*Test.java" />
 				</fileset>
 			</batchtest>

@@ -1,4 +1,4 @@
-package unit;
+package test.unit;
 
 import java.awt.Dimension;
 import org.junit.Test;
@@ -18,9 +18,10 @@ public class UnitTest {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new StrongUnit(new Position(3,3));
+        game.addUnit(testunit);
         testunit.owner = game.getPlayer(0);
         testunit.findPath(new Position(3,8));
-        testunit.step();
+        testunit.step(game);
         assertTrue(testunit.getPosition().equals(new Position(3,4)));
     }
     @Test

@@ -70,9 +70,11 @@ public class GameView {
     private JPanel activeControlPanel;
     
     private final JPanel mainControlPanel;
+    private final JPanel mainUpperControlPanel;
     private final JPanel towerButtonPanel;
     private final JPanel unitButtonPanel;
     
+    private final JPanel spellPanel;
     private final JPanel towerPanel;
     private final JPanel towerStatPanel;
     private final JLabel towerNameLabel;
@@ -201,6 +203,9 @@ public class GameView {
         });
         unitInfoPanel.add(cancelButton, BorderLayout.EAST);
         
+        spellPanel = new JPanel();
+        spellPanel.setLayout(new BoxLayout(spellPanel, BoxLayout.X_AXIS));
+        
         towerPanel = new JPanel();
         towerPanel.setLayout(new GridLayout(0, 2));
         towerStatPanel = new JPanel();
@@ -220,7 +225,7 @@ public class GameView {
         
         activeControlPanel = new JPanel(new CardLayout());
         
-        mainControlPanel = new JPanel();
+        mainUpperControlPanel = new JPanel();
         towerControlPanel = new JPanel();
         towerControlPanel.setLayout(new BoxLayout(towerControlPanel, BoxLayout.Y_AXIS));
         
@@ -312,7 +317,7 @@ public class GameView {
                 }
                 
                 if(havepath) {
-                    game.addTower(chosenTower, pos);
+                    game.buildTower(chosenTower, pos);
                 }
                 else {
                     game.map[pos.getX()][pos.getY()] = true;
@@ -431,7 +436,7 @@ public class GameView {
             	if(!gameover) {
             		game.reloadObstacles();
                     for(int i = 0; i < game.getUnits().size();i++) {
-                    	game.getUnits().get(i).step();
+                    	game.getUnits().get(i).step(game);
                     }
                     game.clearTowerShots();
                     game.activeSpells.clear();
@@ -469,12 +474,12 @@ public class GameView {
         towerButtonPanel.add(srTower);
         towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         towerButtonPanel.add(gMine);
-        towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        towerButtonPanel.add(freezeButton);
-        towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        towerButtonPanel.add(meteorButton);
-        towerButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        towerButtonPanel.add(healButton);
+
+        spellPanel.add(freezeButton);
+        spellPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        spellPanel.add(meteorButton);
+        spellPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        spellPanel.add(healButton);
         
         unitButtonPanel.add(sUnit);
         unitButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -482,9 +487,15 @@ public class GameView {
         unitButtonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         unitButtonPanel.add(oUnit);
         
-        mainControlPanel.add(towerButtonPanel);
-        mainControlPanel.add(unitButtonPanel);
-        mainControlPanel.add(turnButton);
+        mainUpperControlPanel.add(towerButtonPanel);
+        mainUpperControlPanel.add(unitButtonPanel);
+        mainUpperControlPanel.add(turnButton);
+        
+        mainControlPanel = new JPanel();
+        mainControlPanel.setLayout(new BoxLayout(mainControlPanel, BoxLayout.Y_AXIS));
+        mainControlPanel.add(mainUpperControlPanel);
+        mainControlPanel.add(spellPanel);
+        mainControlPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         
         towerPanel.add(towerStatPanel);
         towerPanel.add(towerControlPanel);

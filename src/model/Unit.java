@@ -74,19 +74,19 @@ public class Unit {
     /**
      * Moves this unit to the next position along the {@code path speed } times
      */
-    public void step() {
+    public void step(Game game) {
     	findPath(path.get(path.size()-1));
     	for(int i = 0; (i < speed) && (path.size()>1); i++) {
     		path.remove(0);
     		position=path.get(0);
     	}
-    	if(this.owner != Main.gw.gameArea.game.getPlayer(0) && this.position.equals(Main.gw.gameArea.game.getPlayer(0).getCastlePosition())) {
-    		Main.gw.gameArea.game.getPlayer(0).damageCastleHp(damage);
-    		Main.gw.gameArea.game.getUnits().remove(this);
+    	if(this.owner != game.getPlayer(0) && this.position.equals(game.getPlayer(0).getCastlePosition())) {
+    		game.getPlayer(0).damageCastleHp(damage);
+    		game.getUnits().remove(this);
     	}
-    	if(this.owner != Main.gw.gameArea.game.getPlayer(1) && this.position.equals(Main.gw.gameArea.game.getPlayer(1).getCastlePosition())) {
-    		Main.gw.gameArea.game.getPlayer(1).damageCastleHp(damage);
-    		Main.gw.gameArea.game.getUnits().remove(this);
+    	if(this.owner != game.getPlayer(1) && this.position.equals(game.getPlayer(1).getCastlePosition())) {
+    		game.getPlayer(1).damageCastleHp(damage);
+    		game.getUnits().remove(this);
     	}
     }
     /**

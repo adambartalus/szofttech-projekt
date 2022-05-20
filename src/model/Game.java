@@ -172,12 +172,15 @@ public class Game {
         players[activePlayerIndex].decreaseGold(cost);
         
     }
+    public void addTower(Tower t) {
+        towers.add(t);
+    }
     /**
-     * Adds a tower to the game, the active player is the owner
+     * Builds a tower to the game, the active player is the owner
      * @param towerClass the class of the tower
      * @param pos the position of the tower
      */
-    public void addTower(Class<?> towerClass, Position pos) {
+    public void buildTower(Class<?> towerClass, Position pos) {
         Field costField;
         int cost;
         try {

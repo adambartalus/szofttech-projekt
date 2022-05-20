@@ -1,4 +1,4 @@
-package spell;
+package test.spell;
 
 import java.awt.Dimension;
 import model.BasicTower;
@@ -19,6 +19,7 @@ public class SpellTest {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new StrongUnit(new Position(3,3)); // 500 hp
+        game.addUnit(testunit);
         testunit.owner = game.getPlayer(0);
         
         MeteorSpell testspell1 = new MeteorSpell();
@@ -30,6 +31,7 @@ public class SpellTest {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new StrongUnit(new Position(3,3)); // 500 hp
+        game.addUnit(testunit);
         testunit.owner = game.getPlayer(0);
         testunit.takeDamage(150);
         
@@ -42,8 +44,10 @@ public class SpellTest {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new StrongUnit(new Position(3,3)); // 500 hp
+        game.addUnit(testunit);
         testunit.owner = game.getPlayer(0);
         BasicTower testTower = new BasicTower(new Position (4,4),game.getPlayer(1));
+        game.addTower(testTower);
         
         FreezeSpell testspell3 = new FreezeSpell();
         testspell3.Effect(new Position(4,4), game, game.getPlayer(0));
