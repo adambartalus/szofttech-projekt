@@ -6,6 +6,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 import model.ActiveSpell;
@@ -25,9 +28,9 @@ public class GameArea extends JPanel{
     private Image grass_tile;
     private Image mountain_tile;
     private Image unit_basic_red;
-    private Image unit_strong_red;
-    private Image unit_fast_red;
-    private Image unit_flying_red;
+    public static Image unit_strong_red;
+    public static Image unit_fast_red;
+    public static Image unit_flying_red;
     private Image castle_red;
     private Image tower_short_red;
     private Image tower_basic_red;
@@ -49,14 +52,21 @@ public class GameArea extends JPanel{
     private Position pointedCell;
     private Position selectedBuildingPos;
    
+    static {
+        try {
+            unit_strong_red = ResourceLoader.loadImage("res/redstrong.png");
+            unit_fast_red = ResourceLoader.loadImage("res/redknight.png");
+            unit_flying_red = ResourceLoader.loadImage("res/reddragon.png");
+        } catch (IOException ex) {
+            Logger.getLogger(GameArea.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public GameArea() {
         try {
             grass_tile = ResourceLoader.loadImage("res/grass_tile.png");
             mountain_tile = ResourceLoader.loadImage("res/mountain.png");
             unit_basic_red = ResourceLoader.loadImage("res/redbasic.png");
-            unit_strong_red = ResourceLoader.loadImage("res/redstrong.png");
-            unit_fast_red = ResourceLoader.loadImage("res/redknight.png");
-            unit_flying_red = ResourceLoader.loadImage("res/reddragon.png");
             castle_red = ResourceLoader.loadImage("res/castlered.png");
             mine_red = ResourceLoader.loadImage("res/minered.png");
             tower_short_red = ResourceLoader.loadImage("res/towershortred.png");

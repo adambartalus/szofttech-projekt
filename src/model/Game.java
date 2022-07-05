@@ -1,7 +1,6 @@
 package model;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -133,10 +132,9 @@ public class Game {
         }
         return false;
     }
-    public void addGoldmine(Position pos) {
+    public void addGoldmine(Position pos) throws NotEnoughGoldException {
         if(getActivePlayer().getGold() < Goldmine.COST) {
-            System.err.println("Not enough gold!");
-            return;
+            throw new NotEnoughGoldException();
         }
         Goldmine g = new Goldmine(pos, getActivePlayer());
         goldmines.add(g);
@@ -151,26 +149,23 @@ public class Game {
      * Adds an unit to the game, the active player is the owner
      * @param u the unit to add
      */
-    public void addUnit(Unit u) {
+    public void addUnit(Unit u) throws Exception {
         Field costField;
         int cost;
         try {
             costField = u.getClass().getField("COST");
             cost = costField.getInt(null);
         } catch (Exception ex) {
-            System.err.println("Error");
-            return ;
+            throw new Exception();
         }
         if(players[activePlayerIndex].getGold() < cost) {
-            System.err.println("Not enough gold!");
-            return ;
+            throw new NotEnoughGoldException();
         }
         u.owner = players[activePlayerIndex];
     	u.findPath(getOpponent().getCastlePosition());
         this.units.add(u);
         players[activePlayerIndex].addUnit(u);
         players[activePlayerIndex].decreaseGold(cost);
-        
     }
     public void addTower(Tower t) {
         towers.add(t);
@@ -180,24 +175,21 @@ public class Game {
      * @param towerClass the class of the tower
      * @param pos the position of the tower
      */
-    public void buildTower(Class<?> towerClass, Position pos) {
+    public void buildTower(Class<?> towerClass, Position pos) throws Exception {
         Field costField;
         int cost;
         try {
             costField = towerClass.getField("COST");
             cost = costField.getInt(null);
         } catch (Exception ex) {
-            System.err.println("Error");
-            return ;
+            throw new Exception();
         }
 
         if(players[activePlayerIndex].getGold() < cost) {
-            System.err.println("Not enough gold!");
-            return ;
+            throw new NotEnoughGoldException();
         }
         if(!canBuildTower(pos)) {
-            System.err.println("Cannot build tower there!");
-            return ;
+            throw new NotAvailableBuildingPositionException();
         }
         try {
             Class<?>[] types = new Class[] {Position.class, Player.class};
