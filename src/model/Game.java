@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
+import javax.swing.JOptionPane;
 
 /**
  * The class storing the game data
@@ -23,6 +24,10 @@ public class Game {
     public Player neutral;
     private final ArrayList<TowerShot> towerShots;
     public ArrayList<ActiveSpell> activeSpells;
+    
+    private boolean gameOver;
+    private Random rand;
+    private Player winner;
 
     /**
      * 
@@ -31,6 +36,7 @@ public class Game {
      * @param player2 the name of player 2
      */
     public Game(Dimension d, String player1, String player2) {
+        rand = new Random();
         Random r = new Random();
         
         this.players = new Player[]{
@@ -54,6 +60,12 @@ public class Game {
      */
     public Game(Dimension d) {
         this(d, "Player1", "Player2");
+    }
+    public boolean isGameOver() {
+        return gameOver;
+    }
+    public Player getWinner() {
+        return winner;
     }
     public void addTowerShot(TowerShot ts) {
         towerShots.add(ts);
@@ -104,50 +116,50 @@ public class Game {
     }
     public ArrayList<Position> getObstaclePositions() {
         ArrayList<Position> pos = new ArrayList<>();
-        for(Obstacle o : obstacles) {
+        obstacles.forEach(o -> {
             pos.add(new Position(o.getPosition()));
-        }
+        });
         return pos;
     }
     
     public ArrayList<Position> getTowerPositions() {
         ArrayList<Position> pos = new ArrayList<>();
-        for(Tower t : towers) {
+        towers.forEach(t -> {
             pos.add(new Position(t.getPosition()));
-        }
+        });
         return pos;
     }
     public ArrayList<Position> getGoldminePositions() {
         ArrayList<Position> pos = new ArrayList<>();
-        for(Goldmine g : goldmines) {
+        goldmines.forEach(g -> {
             pos.add(new Position(g.getPosition()));
-        }
+        });
         return pos;
     }
     public boolean isObstacleAtPos(Position pos) {
-        for(Obstacle o : obstacles) {
-            if(pos.equals(o.getPosition())) {
-                return true;
-            }
-        }
-        return false;
+        return obstacles.stream().anyMatch(o -> (pos.equals(o.getPosition())));
     }
-    public void addGoldmine(Position pos) throws NotEnoughGoldException {
+    public void buildGoldmine(Position pos) throws
+            NotEnoughGoldException, NotAvailableBuildingPositionException {
         if(getActivePlayer().getGold() < Goldmine.COST) {
             throw new NotEnoughGoldException();
+        }
+        if(isPositionTaken(pos)) {
+            throw new NotAvailableBuildingPositionException();
         }
         Goldmine g = new Goldmine(pos, getActivePlayer());
         goldmines.add(g);
         getActivePlayer().decreaseGold(Goldmine.COST);
     }
     public void goldmineTurn() {
-        for(Goldmine g : goldmines) {
+        goldmines.forEach(g -> {
             g.turn();
-        }
+        });
     }
     /**
      * Adds an unit to the game, the active player is the owner
      * @param u the unit to add
+     * @throws java.lang.Exception
      */
     public void addUnit(Unit u) throws Exception {
         Field costField;
@@ -155,7 +167,7 @@ public class Game {
         try {
             costField = u.getClass().getField("COST");
             cost = costField.getInt(null);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
             throw new Exception();
         }
         if(players[activePlayerIndex].getGold() < cost) {
@@ -174,6 +186,7 @@ public class Game {
      * Builds a tower to the game, the active player is the owner
      * @param towerClass the class of the tower
      * @param pos the position of the tower
+     * @throws java.lang.Exception
      */
     public void buildTower(Class<?> towerClass, Position pos) throws Exception {
         Field costField;
@@ -191,6 +204,15 @@ public class Game {
         if(!canBuildTower(pos)) {
             throw new NotAvailableBuildingPositionException();
         }
+        // Checking if new tower blocks the path to the castle
+        map[pos.getX()][pos.getY()] = false;
+        Unit testunit = new StrongUnit(getActivePlayer().getCastlePosition(), this);
+        testunit.findPath(getOpponent().getCastlePosition());
+        if(testunit.path.isEmpty()) {
+            map[pos.getX()][pos.getY()] = true;
+            throw new NotAvailableBuildingPositionException();
+        }
+        //
         try {
             Class<?>[] types = new Class[] {Position.class, Player.class};
             Constructor<?> c = towerClass.getConstructor(types);
@@ -226,11 +248,9 @@ public class Game {
     }
     public ArrayList<Unit> getUnitsAtPos(Position pos) {
         ArrayList<Unit> unitsAtPos = new ArrayList<>();
-        for(Unit u : units) {
-            if(pos.equals(u.getPosition())) {
-                unitsAtPos.add(u);
-            }
-        }
+        units.stream().filter(u -> (pos.equals(u.getPosition()))).forEachOrdered(u -> {
+            unitsAtPos.add(u);
+        });
         return unitsAtPos;
     }
     
@@ -277,6 +297,9 @@ public class Game {
         
         return allyBuildingInRange;
     }
+    private boolean isPositionTaken(Position pos) {
+        return createCollisionMap()[pos.getY()][pos.getX()] == 1;
+    }
     private Position getRandomPosition() {
         Random r = new Random();
         return new Position(
@@ -309,10 +332,52 @@ public class Game {
             p = t.getPosition();
             map[p.getY()][p.getX()] = 1;
         }
+        for(Goldmine g : goldmines) {
+            p = g.getPosition();
+            map[p.getY()][p.getX()] = 1;
+        }
         for(Obstacle o : obstacles) {
             p = o.getPosition();
             map[p.getY()][p.getX()] = 1;
         }
         return map;
+    }
+    public void upgradeTower(Tower tower) throws NotEnoughGoldException {
+        if(tower.getOwner().getGold() < tower.upgradecost) {
+            throw new NotEnoughGoldException();
+        }
+        tower.getOwner().decreaseGold(tower.upgradecost);
+        tower.upgrade();
+    }
+    public void turn() {
+        if(!gameOver) {
+            reloadObstacles();
+            units.forEach(u -> {
+                u.step(this);
+            });
+            units.removeIf(u -> u.isDead());
+            clearTowerShots();
+            activeSpells.clear();
+            towers.forEach(t -> {
+                t.turn(this);
+            });
+            nextPlayer();
+            goldmineTurn();
+            getActivePlayer().increaseGold(500);
+            if(getActivePlayer().getCastleHp() < 0) {
+                gameOver = true;
+                winner = getOpponent();
+            }
+            for(int i = 0; i < getMapDimension().width; i++) {
+                for(int j = 0; j < getMapDimension().height; j++) {
+                        if(rand.nextInt(1000) < 1 && map[i][j]) {
+                        Unit newunit = new StrongUnit(new Position(i,j), this);
+                        newunit.owner = neutral;
+                        newunit.findPath(getActivePlayer().getCastlePosition());
+                        getUnits().add(newunit);
+                    }
+                }
+            }
+        }
     }
 }

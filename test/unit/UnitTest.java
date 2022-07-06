@@ -1,6 +1,8 @@
 package unit;
 
 import java.awt.Dimension;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 
 import model.Game;
@@ -20,7 +22,11 @@ public class UnitTest {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new ObstacleUnit(new Position(3,3), game);
-        game.addUnit(testunit);
+        try {
+            game.addUnit(testunit);
+        } catch (Exception ex) {
+            
+        }
         testunit.owner = game.getPlayer(0);
         testunit.findPath(new Position(3,8));
         testunit.step(game);
@@ -40,7 +46,11 @@ public class UnitTest {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new StrongUnit(new Position(3,3), game);
-        game.addUnit(testunit);
+        try {
+            game.addUnit(testunit);
+        } catch (Exception ex) {
+            
+        }
         testunit.owner = game.getPlayer(0);
         
         assertTrue(game.getUnits().contains(testunit));

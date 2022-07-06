@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package view;
 
 import java.awt.Color;
@@ -28,15 +24,15 @@ import model.StrongUnit;
  * @author Adam
  */
 public class CastlePanel extends JPanel {
-    private GameView gameView;
+    private final GameView gameView;
     
-    private JPanel unitSpawnPanel;
-    private JButton sUnit;
-    private JButton fUnit;
-    private JButton oUnit;
+    private final JPanel unitSpawnPanel;
+    private final JButton sUnit;
+    private final JButton fUnit;
+    private final JButton oUnit;
     
     public JPanel healthBar;
-    private JLabel hpLabel;
+    private final JLabel hpLabel;
     
     
     public CastlePanel(GameView gv) {

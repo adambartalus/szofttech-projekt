@@ -1,6 +1,8 @@
 package tower;
 
 import java.awt.Dimension;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.BasicTower;
 import model.Game;
 import model.Position;
@@ -17,7 +19,11 @@ public class TowerTest {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new StrongUnit(new Position(3,3), game);
-        game.addUnit(testunit);
+        try {
+            game.addUnit(testunit);
+        } catch (Exception ex) {
+            
+        }
         testunit.owner = game.getPlayer(0);
         BasicTower testTower = new BasicTower(new Position (4,4),game.getPlayer(1));
         testTower.turn(game);
@@ -32,7 +38,11 @@ public class TowerTest {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new StrongUnit(new Position(3,3), game);
-        game.addUnit(testunit);
+        try {
+            game.addUnit(testunit);
+        } catch (Exception ex) {
+            
+        }
         testunit.owner = game.getPlayer(0);
         
         BasicTower testTower = new BasicTower(new Position (6,6),game.getPlayer(1));

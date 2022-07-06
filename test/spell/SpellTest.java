@@ -1,6 +1,8 @@
 package spell;
 
 import java.awt.Dimension;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.BasicTower;
 import model.FreezeSpell;
 import model.Game;
@@ -19,19 +21,27 @@ public class SpellTest {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new StrongUnit(new Position(3,3), game); // 500 hp
-        game.addUnit(testunit);
+        try {
+            game.addUnit(testunit);
+        } catch (Exception ex) {
+            
+        }
         testunit.owner = game.getPlayer(0);
         
         MeteorSpell testspell1 = new MeteorSpell();
         testspell1.Effect(new Position(3,3), game, game.getPlayer(1));
-        assertEquals(testunit.getHp(), 0);
+        assertEquals(200, testunit.getHp());
     }
     @Test
     public void healSpell() {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new StrongUnit(new Position(3,3), game); // 500 hp
-        game.addUnit(testunit);
+        try {
+            game.addUnit(testunit);
+        } catch (Exception ex) {
+            
+        }
         testunit.owner = game.getPlayer(0);
         testunit.takeDamage(150);
         
@@ -44,7 +54,11 @@ public class SpellTest {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
         Unit testunit = new StrongUnit(new Position(3,3), game); // 500 hp
-        game.addUnit(testunit);
+        try {
+            game.addUnit(testunit);
+        } catch (Exception ex) {
+            
+        }
         testunit.owner = game.getPlayer(0);
         BasicTower testTower = new BasicTower(new Position (4,4),game.getPlayer(1));
         game.addTower(testTower);

@@ -13,7 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,7 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import model.BasicTower;
 import model.FreezeSpell;
@@ -39,7 +40,6 @@ import model.NotEnoughGoldException;
 import model.Position;
 import model.ShortRangeTower;
 import model.Spell;
-import model.StrongUnit;
 import model.Tower;
 import model.Unit;
 import model.UnitInfoTableModel;
@@ -57,12 +57,8 @@ public class GameView {
     private final JPanel cards;
     private final CardLayout cardLayout;
     
-    private final JPanel mainMenu;
-    private final JPanel gameSettings;
-    private final JTextField rowField;
-    private final JTextField colField;
-    private final JTextField player1NameField;
-    private final JTextField player2NameField;
+    private final MainMenu mainMenu;
+    private final GameSettings gameSettings;
     
     private final JLayeredPane layeredPane;
     
@@ -92,27 +88,23 @@ public class GameView {
     private final TowerControlButton upgradeTowerButton;
     private final TowerControlButton demolishTowerButton;
     
+    private CastlePanel castlePanel;
     private final JPanel statPanel;
     private final JLabel statLabel;
     
-    private JPanel errorPanel;
-    private JLabel errorLabel;
+    private final JPanel errorPanel;
+    private final JLabel errorLabel;
     
     private Class chosenTower;
+    private Spell selectedSpell;
+    
     private boolean goldMineSelected = false;
     private Game game;
     
     private final int FPS = 60;
     private final Timer timer;
     
-    private boolean gameover = false;
-    private Random r;
-    private Spell selectedSpell = null;
-
-    private CastlePanel castlePanel;
-    
     public GameView() {
-    	r = new Random();
         frame = new JFrame();
         frame.setLayout(new BorderLayout(0, 5));
         cardLayout = new CardLayout();
@@ -120,76 +112,19 @@ public class GameView {
         
         castlePanel = new CastlePanel(this);
         
-        mainMenu = new JPanel();
-        mainMenu.setLayout(new BoxLayout(mainMenu, BoxLayout.Y_AXIS));
-        mainMenu.setPreferredSize(new Dimension(500, 500));
+        mainMenu = new MainMenu();
+        gameSettings = new GameSettings(this);
         
-        JButton newGameButton = new JButton("New Game");
-        newGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        newGameButton.setMaximumSize(new Dimension(200, 30));
-        newGameButton.setFocusPainted(false);
-        newGameButton.addActionListener(new ActionListener() {
+        mainMenu.addNewGameButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cards, "Settings");
                 frame.pack();
             }
         });
-        JButton exitButton = new JButton("Exit");
-        exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        exitButton.setMaximumSize(new Dimension(200, 30));
-        exitButton.addActionListener((ActionEvent e) -> {
+        mainMenu.addExitButtonActionListener((ActionEvent e) -> {
             System.exit(0);
         });
-        gameSettings = new JPanel();
-        gameSettings.setLayout(null);
-        
-        rowField = new JTextField();
-        rowField.setSize(new Dimension(30, 25));
-        rowField.setLocation(250, 150);
-        colField = new JTextField();
-        colField.setSize(new Dimension(30, 25));
-        colField.setLocation(250, 180);
-        
-        JLabel rowLabel = new JLabel("Rows: ");
-        rowLabel.setSize(new Dimension(50, 25));
-        rowLabel.setLocation(205, 150);
-        
-        JLabel colLabel = new JLabel("Cols: ");
-        colLabel.setSize(new Dimension(50, 25));
-        colLabel.setLocation(210, 180);
-        
-        player1NameField = new JTextField("Player1");
-        player1NameField.setSize(new Dimension(100, 25));
-        player1NameField.setLocation(250, 210);
-        player2NameField = new JTextField("Player2");
-        player2NameField.setSize(new Dimension(100, 25));
-        player2NameField.setLocation(250, 240);
-        
-        JLabel p1 = new JLabel("Player 1: ");
-        p1.setSize(new Dimension(60, 25));
-        p1.setLocation(190, 210);
-        JLabel p2 = new JLabel("Player 2: ");
-        p2.setSize(new Dimension(60, 25));
-        p2.setLocation(190, 240);
-        
-        JButton startGameButton = new JButton("Start Game");
-        startGameButton.addActionListener((ActionEvent e) -> {
-            startNewGame();
-        });
-        startGameButton.setSize(new Dimension(100, 25));
-        startGameButton.setMargin(new Insets(0, 0, 0, 0));
-        startGameButton.setLocation(210, 270);
-        
-        gameSettings.add(rowLabel);
-        gameSettings.add(rowField);
-        gameSettings.add(colLabel);
-        gameSettings.add(colField);
-        gameSettings.add(p1);
-        gameSettings.add(player1NameField);
-        gameSettings.add(p2);
-        gameSettings.add(player2NameField);
-        gameSettings.add(startGameButton);
         
         layeredPane = new JLayeredPane();
         
@@ -252,17 +187,17 @@ public class GameView {
         towerControlPanel.setLayout(new BoxLayout(towerControlPanel, BoxLayout.Y_AXIS));
         
         upgradeTowerButton = new TowerControlButton("Upgrade");
+        upgradeTowerButton.setMaximumSize(new Dimension(400, 30));
         upgradeTowerButton.addActionListener((ActionEvent e) -> {
-        	if(game.getActivePlayer().getGold()>upgradeTowerButton.getTower().upgradecost) {
-        		game.getActivePlayer().decreaseGold(upgradeTowerButton.getTower().upgradecost);
-        		upgradeTowerButton.getTower().upgrade();
+            try {
+                game.upgradeTower(upgradeTowerButton.getTower());
                 updateTowerStats(upgradeTowerButton.getTower());
-        	}
-            upgradeTowerButton.getTower().upgrade();
-            updateTowerStats(upgradeTowerButton.getTower());
-            
+            } catch (NotEnoughGoldException ex) {
+                displayErrorMessage("You don't have enough gold!");
+            }
         });
         demolishTowerButton = new TowerControlButton("Demolish");
+        demolishTowerButton.setMaximumSize(new Dimension(400, 30));
         demolishTowerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -272,13 +207,13 @@ public class GameView {
             }
         });
         JButton cancel = new JButton("X");
+        cancel.setMaximumSize(new Dimension(400, 30));
         cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setActiveControlPanel(MAIN_CONTROL_PANEL);
                 gameArea.setSelectedBuildingPos(null);
             }
-            
         });
         towerControlPanel.add(upgradeTowerButton);
         towerControlPanel.add(demolishTowerButton);
@@ -301,6 +236,12 @@ public class GameView {
         gameArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                if(SwingUtilities.isRightMouseButton(e)) {
+                    chosenTower = null;
+                    gameArea.setPointedCell(null);
+                    goldMineSelected = false;
+                    return;
+                }
                 layeredPane.remove(castlePanel);
                 Position pos = getPositionFromPoint(e.getPoint());
                 if(selectedSpell !=null) {
@@ -310,11 +251,12 @@ public class GameView {
                 if(game.isObstacleAtPos(pos)) return;
                 if(goldMineSelected) {
                     try {
-                        game.addGoldmine(pos);
+                        game.buildGoldmine(pos);
                     } catch(NotEnoughGoldException exc) {
                         displayErrorMessage("You don't have enough gold!");
+                    } catch(NotAvailableBuildingPositionException exc) {
+                        displayErrorMessage("You can't build there!");
                     }
-                    goldMineSelected = false;
                     gameArea.setPointedCell(null);
                     return;
                 }
@@ -354,30 +296,15 @@ public class GameView {
                     }
                     return ;
                 }
-                
-                boolean havepath = false;
-                game.map[pos.getX()][pos.getY()] = false;
-                Unit testunit = new StrongUnit(game.getActivePlayer().getCastlePosition(), game);
-                testunit.findPath(game.getOpponent().getCastlePosition());
-                if(testunit.path.size()>0) {
-                    havepath = true;
+                try{
+                    game.buildTower(chosenTower, pos);
+                } catch(NotEnoughGoldException exc) {
+                    displayErrorMessage("You don't have enough gold!");
+                } catch(NotAvailableBuildingPositionException exc) {
+                    displayErrorMessage("You can't build there!");
+                } catch(Exception exc) {
+                    displayErrorMessage("Error");
                 }
-                
-                if(havepath) {
-                    try{
-                        game.buildTower(chosenTower, pos);
-                    } catch(NotEnoughGoldException exc) {
-                        displayErrorMessage("You don't have enough gold!");
-                    } catch(NotAvailableBuildingPositionException exc) {
-                        displayErrorMessage("You can't build there!");
-                    } catch(Exception exc) {
-                        displayErrorMessage("Error");
-                    }
-                }
-                else {
-                    game.map[pos.getX()][pos.getY()] = true;
-                }
-
                 // chosenTower = null;
                 gameArea.setPointedCell(null);
             }
@@ -458,34 +385,10 @@ public class GameView {
         turnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	if(!gameover) {
-            		game.reloadObstacles();
-                    for(int i = 0; i < game.getUnits().size();i++) {
-                    	game.getUnits().get(i).step(game);
-                    }
-                    game.clearTowerShots();
-                    game.activeSpells.clear();
-                    for(int i = 0; i < game.getTowers().size();i++) {
-                    	game.getTowers().get(i).turn(game);
-                    }
-                    game.nextPlayer();
-                    game.goldmineTurn();
-                    game.getActivePlayer().increaseGold(500);
-                    if(game.getActivePlayer().getCastleHp()<0) {
-                    	gameover = true;
-                    	JOptionPane.showMessageDialog(gamePanel, game.getOpponent().getName() + " Wins", "Game Over",JOptionPane.PLAIN_MESSAGE);
-                    }
-                    for(int i = 0; i < game.getMapDimension().width; i++) {
-                    	for(int j = 0; j < game.getMapDimension().height; j++) {
-                    		if(r.nextInt(1000)<1 && game.map[i][j]) {
-                            	Unit newunit = new StrongUnit(new Position(i,j), game);
-                            	newunit.owner = game.neutral;
-                            	newunit.findPath(game.getActivePlayer().getCastlePosition());
-                            	game.getUnits().add(newunit);
-                            }
-                        }
-                    }
-            	}
+                game.turn();
+                if(game.isGameOver()) {
+                    JOptionPane.showMessageDialog(gamePanel, game.getWinner().getName() + " Wins", "Game Over",JOptionPane.PLAIN_MESSAGE);
+                }
             }
         });
         turnButton.setPreferredSize(new Dimension(160,30));
@@ -524,11 +427,6 @@ public class GameView {
         activeControlPanel.add(unitInfoPanel, UNIT_INFO_PANEL);
         ((CardLayout)(activeControlPanel.getLayout())).show(activeControlPanel, MAIN_CONTROL_PANEL);
         
-        mainMenu.add(Box.createRigidArea(new Dimension(0, 200)));
-        mainMenu.add(newGameButton);
-        mainMenu.add(Box.createRigidArea(new Dimension(0, 10)));
-        mainMenu.add(exitButton);
-        
         gamePanel.add(statPanel, BorderLayout.NORTH);
         gamePanel.add(layeredPane, BorderLayout.CENTER);
         gamePanel.add(activeControlPanel, BorderLayout.SOUTH);
@@ -540,7 +438,28 @@ public class GameView {
         errorPanel = new JPanel();
         errorPanel.setBackground(Color.red);
         errorLabel = new JLabel();
+        JButton closeBtn = new JButton("X");
+        closeBtn.setContentAreaFilled(false);
+        closeBtn.setBorderPainted(false);
+        closeBtn.setMargin(new Insets(0, 0, 0, 0));
+        closeBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                closeBtn.setForeground(Color.white);
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                closeBtn.setForeground(Color.black);
+            }
+        });
+        closeBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hideErrorMessage();
+            }
+        });
         errorPanel.add(errorLabel);
+        errorPanel.add(closeBtn);
         errorPanel.setVisible(false);
         
         JPanel main = new JPanel();
@@ -571,17 +490,16 @@ public class GameView {
     private void hideErrorMessage() {
         errorPanel.setVisible(false);
     }
-    private void startNewGame() {
-    	gameover = false;
+    void startNewGame() {
         int row, col;
         try {
-            row = Integer.parseInt(this.rowField.getText());
+            row = Integer.parseInt(gameSettings.getRowFieldText());
         } catch(NumberFormatException nfe) {
             displayErrorMessage("The rows should be a number between 8 and 10");
             return;
         }
         try {
-            col = Integer.parseInt(this.colField.getText());
+            col = Integer.parseInt(gameSettings.getColFieldText());
         } catch(NumberFormatException nfe) {
             displayErrorMessage("The cols should be a number between 8 and 10");
             return;
@@ -594,8 +512,8 @@ public class GameView {
             displayErrorMessage("The number of columns should be between 12 and 20");
             return;
         }
-        String player1 = player1NameField.getText();
-        String player2 = player2NameField.getText();
+        String player1 = gameSettings.getPlayer1FieldText();
+        String player2 = gameSettings.getPlayer2FieldText();
         game = new Game(new Dimension(col, row), player1, player2);
         castlePanel.setUpGame(game);
         
@@ -633,7 +551,7 @@ public class GameView {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
                     updateStatLabel();
-                    // castlePanel.updateHealthBar(game.getActivePlayer().getCastleHp(), 5000);
+                    castlePanel.updateHealthBar(game.getActivePlayer().getCastleHp(), 5000);
                     gameArea.repaint();
                 }
             });

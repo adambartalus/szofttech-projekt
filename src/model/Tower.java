@@ -1,7 +1,5 @@
 package model;
 
-import main.Main;
-
 public class Tower extends Building {
 
     protected int range;
@@ -35,8 +33,8 @@ public class Tower extends Building {
     public void turn(Game g) {
     	if(!freeze)
     	{
-    		Unit cUnit;
-        	for(int i = 0; i < g.getUnits().size(); i++) {
+            Unit cUnit;
+            for(int i = 0; i < g.getUnits().size(); i++) {
                 cUnit = g.getUnits().get(i);
                 if(this.getOwner() != cUnit.owner){
                     int distancex = Math.abs(cUnit.getPosition().getX() - this.getPosition().getX());
@@ -49,9 +47,10 @@ public class Tower extends Building {
                     if(!aoe)
                         break;
                 }
-        	}
+            }
     	}
-    	else
-    		freeze = false;
+        else {
+            freeze = false;
+        }
     }
 }

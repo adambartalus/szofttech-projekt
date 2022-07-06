@@ -3,8 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import main.Main;
-
 /**
  * Base class of units
  */
@@ -40,7 +38,9 @@ public class Unit {
     public int getSpeed() {
         return speed;
     }
-
+    public boolean isDead() {
+        return hp <= 0;
+    }
     public int getHp() {
         return hp;
     }
@@ -84,11 +84,11 @@ public class Unit {
     	}
     	if(this.owner != game.getPlayer(0) && this.position.equals(game.getPlayer(0).getCastlePosition())) {
     		game.getPlayer(0).damageCastleHp(damage);
-    		game.getUnits().remove(this);
+    		hp = 0;
     	}
     	if(this.owner != game.getPlayer(1) && this.position.equals(game.getPlayer(1).getCastlePosition())) {
     		game.getPlayer(1).damageCastleHp(damage);
-    		game.getUnits().remove(this);
+    		hp = 0;
     	}
     }
     /**
