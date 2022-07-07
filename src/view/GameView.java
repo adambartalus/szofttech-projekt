@@ -242,13 +242,12 @@ public class GameView {
                     goldMineSelected = false;
                     return;
                 }
-                layeredPane.remove(castlePanel);
+                hideCastlePanel();
                 Position pos = getPositionFromPoint(e.getPoint());
                 if(selectedSpell !=null) {
                     selectedSpell.Effect(pos, game, game.getActivePlayer());
                     selectedSpell = null;
                 }
-                if(game.isObstacleAtPos(pos)) return;
                 if(goldMineSelected) {
                     try {
                         game.buildGoldmine(pos);
@@ -270,22 +269,7 @@ public class GameView {
                         setActiveControlPanel(TOWER_CONTROL_PANEL);
                     } else if(null == t && null == game.getGoldmineAtPos(pos)) { // listing units at the position
                         if(pos.equals(game.getActivePlayer().getCastlePosition())) {
-                            int width = castlePanel.getPreferredSize().width;
-                            int height = castlePanel.getPreferredSize().height;
-                            int x = (pos.getX() + 1) * Game.cellSize;
-                            int y = (pos.getY() + 1) * Game.cellSize;
-                            if((game.getMapDimension().width - pos.getX()) * Game.cellSize < width ) {
-                                x = pos.getX() * Game.cellSize - width;
-                            }
-                            if(game.getMapDimension().height - pos.getY() < 3) {
-                                y = pos.getY() * Game.cellSize - height;
-                            }
-                            castlePanel.setBounds(
-                                    x,
-                                    y,
-                                    width,
-                                    height);
-                            layeredPane.add(castlePanel, new Integer(1));
+                            displayCastlePanel(pos);
                             return;
                         }
                         ArrayList<Unit> units = game.getUnitsAtPos(pos);
@@ -487,8 +471,29 @@ public class GameView {
         errorLabel.setText(message);
         errorPanel.setVisible(true);
     }
+    void displayCastlePanel(Position pos) {
+        int width = castlePanel.getPreferredSize().width;
+        int height = castlePanel.getPreferredSize().height;
+        int x = (pos.getX() + 1) * Game.cellSize;
+        int y = (pos.getY() + 1) * Game.cellSize;
+        if(x + width > game.getMapDimension().width * Game.cellSize ) {
+            x = pos.getX() * Game.cellSize - width;
+        }
+        if(game.getMapDimension().height - pos.getY() < 3) {
+            y = pos.getY() * Game.cellSize - height;
+        }
+        castlePanel.setBounds(
+                x,
+                y,
+                width,
+                height);
+        layeredPane.add(castlePanel, new Integer(1));
+    }
     private void hideErrorMessage() {
         errorPanel.setVisible(false);
+    }
+    private void hideCastlePanel() {
+        layeredPane.remove(castlePanel);
     }
     void startNewGame() {
         int row, col;

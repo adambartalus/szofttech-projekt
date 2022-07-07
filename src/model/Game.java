@@ -5,7 +5,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
-import javax.swing.JOptionPane;
 
 /**
  * The class storing the game data
@@ -164,17 +163,14 @@ public class Game {
     public void addUnit(Unit u) throws Exception {
         Field costField;
         int cost;
-        try {
-            costField = u.getClass().getField("COST");
-            cost = costField.getInt(null);
-        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
-            throw new Exception();
-        }
+        costField = u.getClass().getField("COST");
+        cost = costField.getInt(null);
+        
         if(players[activePlayerIndex].getGold() < cost) {
             throw new NotEnoughGoldException();
         }
         u.owner = players[activePlayerIndex];
-    	u.findPath(getOpponent().getCastlePosition());
+    	u.findPath(getOpponent().getCastlePosition(), createCollisionMap());
         this.units.add(u);
         players[activePlayerIndex].addUnit(u);
         players[activePlayerIndex].decreaseGold(cost);
@@ -205,11 +201,11 @@ public class Game {
             throw new NotAvailableBuildingPositionException();
         }
         // Checking if new tower blocks the path to the castle
-        map[pos.getX()][pos.getY()] = false;
-        Unit testunit = new StrongUnit(getActivePlayer().getCastlePosition(), this);
-        testunit.findPath(getOpponent().getCastlePosition());
+        int[][] cMap = createCollisionMap();
+        cMap[pos.getY()][pos.getX()] = 1;
+        Unit testunit = new StrongUnit(getActivePlayer().getCastlePosition());
+        testunit.findPath(getOpponent().getCastlePosition(), cMap);
         if(testunit.path.isEmpty()) {
-            map[pos.getX()][pos.getY()] = true;
             throw new NotAvailableBuildingPositionException();
         }
         //
@@ -320,27 +316,35 @@ public class Game {
             }
         }
     }
+    void printMap(int[][] map) {
+        for(int i = 0; i < map.length; ++i) {
+            for(int j = 0; j < map[0].length; j++) {
+                System.out.print(map[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
     int[][] createCollisionMap() {
         int rows = mapDimension.height;
         int cols = mapDimension.width;
-        int[][] map = new int[rows][cols];
+        int[][] cMap = new int[rows][cols];
         Position p = players[0].getCastlePosition();
-        map[p.getY()][p.getX()] = 1;
+        cMap[p.getY()][p.getX()] = 1;
         p = players[1].getCastlePosition();
-        map[p.getY()][p.getX()] = 1;
+        cMap[p.getY()][p.getX()] = 1;
         for(Tower t : towers) {
             p = t.getPosition();
-            map[p.getY()][p.getX()] = 1;
+            cMap[p.getY()][p.getX()] = 1;
         }
         for(Goldmine g : goldmines) {
             p = g.getPosition();
-            map[p.getY()][p.getX()] = 1;
+            cMap[p.getY()][p.getX()] = 1;
         }
         for(Obstacle o : obstacles) {
             p = o.getPosition();
-            map[p.getY()][p.getX()] = 1;
+            cMap[p.getY()][p.getX()] = 1;
         }
-        return map;
+        return cMap;
     }
     public void upgradeTower(Tower tower) throws NotEnoughGoldException {
         if(tower.getOwner().getGold() < tower.upgradecost) {
@@ -349,35 +353,49 @@ public class Game {
         tower.getOwner().decreaseGold(tower.upgradecost);
         tower.upgrade();
     }
+    private Player getOpponentOf(Player p) {
+        if(players[0] == p) return players[1];
+        return players[0];
+    }
     public void turn() {
-        if(!gameOver) {
-            reloadObstacles();
-            units.forEach(u -> {
-                u.step(this);
-            });
-            units.removeIf(u -> u.isDead());
-            clearTowerShots();
-            activeSpells.clear();
-            towers.forEach(t -> {
-                t.turn(this);
-            });
-            nextPlayer();
-            goldmineTurn();
-            getActivePlayer().increaseGold(500);
-            if(getActivePlayer().getCastleHp() < 0) {
-                gameOver = true;
-                winner = getOpponent();
+        if(gameOver) return;
+        
+        reloadObstacles();
+        units.forEach(u -> {
+            u.step(createCollisionMap());
+            if(isUnitAtOpponentCastle(u)) {
+                getOpponentOf(u.getOwner()).damageCastleHp(u.getDamage());
+                u.takeDamage(u.getHp());
             }
-            for(int i = 0; i < getMapDimension().width; i++) {
-                for(int j = 0; j < getMapDimension().height; j++) {
-                        if(rand.nextInt(1000) < 1 && map[i][j]) {
-                        Unit newunit = new StrongUnit(new Position(i,j), this);
-                        newunit.owner = neutral;
-                        newunit.findPath(getActivePlayer().getCastlePosition());
-                        getUnits().add(newunit);
-                    }
+        });
+        units.removeIf(u -> u.isDead());
+        clearTowerShots();
+        activeSpells.clear();
+        towers.forEach(t -> {
+            t.turn(this);
+        });
+        units.removeIf(u -> u.isDead());
+        nextPlayer();
+        goldmineTurn();
+        getActivePlayer().increaseGold(500);
+        if(getActivePlayer().getCastleHp() < 0) {
+            gameOver = true;
+            winner = getOpponent();
+        }
+        for(int i = 0; i < getMapDimension().width; i++) {
+            for(int j = 0; j < getMapDimension().height; j++) {
+                    if(rand.nextInt(1000) < 1 && map[i][j]) {
+                    Unit newunit = new StrongUnit(new Position(i,j));
+                    newunit.owner = neutral;
+                    newunit.findPath(getActivePlayer().getCastlePosition(), createCollisionMap());
+                    getUnits().add(newunit);
                 }
             }
         }
+    }
+
+    private boolean isUnitAtOpponentCastle(Unit u) {
+        Player opponent = getOpponentOf(u.getOwner());
+        return u.getPosition().equals(opponent.getCastlePosition());
     }
 }

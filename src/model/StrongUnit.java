@@ -7,9 +7,8 @@ public class StrongUnit extends Unit {
     
     public static final int COST = 50;
     
-    public StrongUnit(Position pos, Game g) {
-        super(pos, 1, 500, g);
-        damage = 200;
+    public StrongUnit(Position pos) {
+        super(pos, 1, 500, 200);
         type = 's';
     }
 }

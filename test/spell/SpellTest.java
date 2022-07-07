@@ -1,8 +1,6 @@
 package spell;
 
 import java.awt.Dimension;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import model.BasicTower;
 import model.FreezeSpell;
 import model.Game;
@@ -20,7 +18,7 @@ public class SpellTest {
     public void meteorSpell() {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
-        Unit testunit = new StrongUnit(new Position(3,3), game); // 500 hp
+        Unit testunit = new StrongUnit(new Position(3,3)); // 500 hp
         try {
             game.addUnit(testunit);
         } catch (Exception ex) {
@@ -36,7 +34,7 @@ public class SpellTest {
     public void healSpell() {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
-        Unit testunit = new StrongUnit(new Position(3,3), game); // 500 hp
+        Unit testunit = new StrongUnit(new Position(3,3)); // 500 hp
         try {
             game.addUnit(testunit);
         } catch (Exception ex) {
@@ -53,7 +51,7 @@ public class SpellTest {
     public void freezeSpell() {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
-        Unit testunit = new StrongUnit(new Position(3,3), game); // 500 hp
+        Unit testunit = new StrongUnit(new Position(3,3)); // 500 hp
         try {
             game.addUnit(testunit);
         } catch (Exception ex) {

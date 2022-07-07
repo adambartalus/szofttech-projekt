@@ -96,11 +96,11 @@ public class CastlePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                   game.addUnit(new StrongUnit(game.getActivePlayer().getCastlePosition(), game)); 
+                   game.addUnit(new StrongUnit(game.getActivePlayer().getCastlePosition())); 
                 } catch(NotEnoughGoldException exc) {
                     gameView.displayErrorMessage("You don't have enough gold!");
                 } catch(Exception exc) {
-                    
+                    gameView.displayErrorMessage(exc.getMessage());
                 }
             }
         });
@@ -108,11 +108,11 @@ public class CastlePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    game.addUnit(new ObstacleUnit(game.getActivePlayer().getCastlePosition(), game));
+                    game.addUnit(new ObstacleUnit(game.getActivePlayer().getCastlePosition()));
                 } catch(NotEnoughGoldException exc) {
                     gameView.displayErrorMessage("You don't have enough gold!");
                 } catch(Exception exc) {
-                    
+                    gameView.displayErrorMessage("Error");
                 }
             }
         });
@@ -120,11 +120,11 @@ public class CastlePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try{
-                    game.addUnit(new FastUnit(game.getActivePlayer().getCastlePosition(), game));
+                    game.addUnit(new FastUnit(game.getActivePlayer().getCastlePosition()));
                 } catch(NotEnoughGoldException exc) {
                     gameView.displayErrorMessage("You don't have enough gold!");
                 } catch(Exception exc) {
-                    
+                    gameView.displayErrorMessage("Error");
                 }
             }
         });

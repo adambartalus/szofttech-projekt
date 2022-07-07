@@ -77,6 +77,5 @@ public class Player {
     }
     public void damageCastleHp(int dmg) {
         castle.setHp(castle.getHp()-dmg);
-        
     }
 }
