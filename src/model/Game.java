@@ -39,8 +39,8 @@ public class Game {
         Random r = new Random();
         
         this.players = new Player[]{
-            new Player(player1, new Position(r.nextInt(d.width), r.nextInt(2))),
-            new Player(player2, new Position(r.nextInt(d.width), d.height - 1 - (r.nextInt(2))))};
+            new Player(player1, new Position(r.nextInt(2), r.nextInt(d.width))),
+            new Player(player2, new Position(d.width - 1 - (r.nextInt(2)), r.nextInt(d.width)))};
         this.units = new ArrayList<>();
         this.towers = new ArrayList<>();
         this.obstacles = new ArrayList<>();
@@ -170,7 +170,7 @@ public class Game {
             throw new NotEnoughGoldException();
         }
         u.owner = players[activePlayerIndex];
-    	u.findPath(getOpponent().getCastlePosition(), createCollisionMap());
+    	u.findPath(createCollisionMap());
         this.units.add(u);
         players[activePlayerIndex].addUnit(u);
         players[activePlayerIndex].decreaseGold(cost);
@@ -202,9 +202,12 @@ public class Game {
         }
         // Checking if new tower blocks the path to the castle
         int[][] cMap = createCollisionMap();
-        cMap[pos.getY()][pos.getX()] = 1;
-        Unit testunit = new StrongUnit(getActivePlayer().getCastlePosition());
-        testunit.findPath(getOpponent().getCastlePosition(), cMap);
+        cMap[pos.getX()][pos.getY()] = 1;
+        Unit testunit = new StrongUnit(
+            getActivePlayer().getCastlePosition(),
+            getOpponent().getCastlePosition()
+        );
+        testunit.findPath(cMap);
         if(testunit.path.isEmpty()) {
             throw new NotAvailableBuildingPositionException();
         }
@@ -294,13 +297,13 @@ public class Game {
         return allyBuildingInRange;
     }
     private boolean isPositionTaken(Position pos) {
-        return createCollisionMap()[pos.getY()][pos.getX()] == 1;
+        return createCollisionMap()[pos.getX()][pos.getY()] == 1;
     }
     private Position getRandomPosition() {
         Random r = new Random();
         return new Position(
-                r.nextInt(mapDimension.width),
-                r.nextInt(mapDimension.height)
+            r.nextInt(mapDimension.width),
+            r.nextInt(mapDimension.height)
         );
     }
     private void generateRandomObstacles() {
@@ -311,7 +314,7 @@ public class Game {
         while(obstacles.size() < num) {
             cMap = createCollisionMap();
             p = getRandomPosition();
-            if(cMap[p.getY()][p.getX()] == 0) {
+            if(cMap[p.getX()][p.getY()] == 0) {
                 obstacles.add(new Obstacle(p));
             }
         }
@@ -325,24 +328,24 @@ public class Game {
         }
     }
     int[][] createCollisionMap() {
-        int rows = mapDimension.height;
-        int cols = mapDimension.width;
+        int rows = mapDimension.width;
+        int cols = mapDimension.height;
         int[][] cMap = new int[rows][cols];
         Position p = players[0].getCastlePosition();
-        cMap[p.getY()][p.getX()] = 1;
+        cMap[p.getX()][p.getY()] = 1;
         p = players[1].getCastlePosition();
-        cMap[p.getY()][p.getX()] = 1;
+        cMap[p.getX()][p.getY()] = 1;
         for(Tower t : towers) {
             p = t.getPosition();
-            cMap[p.getY()][p.getX()] = 1;
+            cMap[p.getX()][p.getY()] = 1;
         }
         for(Goldmine g : goldmines) {
             p = g.getPosition();
-            cMap[p.getY()][p.getX()] = 1;
+            cMap[p.getX()][p.getY()] = 1;
         }
         for(Obstacle o : obstacles) {
             p = o.getPosition();
-            cMap[p.getY()][p.getX()] = 1;
+            cMap[p.getX()][p.getY()] = 1;
         }
         return cMap;
     }
@@ -385,9 +388,9 @@ public class Game {
         for(int i = 0; i < getMapDimension().width; i++) {
             for(int j = 0; j < getMapDimension().height; j++) {
                     if(rand.nextInt(1000) < 1 && map[i][j]) {
-                    Unit newunit = new StrongUnit(new Position(i,j));
+                    Unit newunit = new StrongUnit(new Position(i,j), getActivePlayer().getCastlePosition());
                     newunit.owner = neutral;
-                    newunit.findPath(getActivePlayer().getCastlePosition(), createCollisionMap());
+                    newunit.findPath(createCollisionMap());
                     getUnits().add(newunit);
                 }
             }

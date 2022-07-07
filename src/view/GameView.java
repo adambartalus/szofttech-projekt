@@ -474,19 +474,19 @@ public class GameView {
     void displayCastlePanel(Position pos) {
         int width = castlePanel.getPreferredSize().width;
         int height = castlePanel.getPreferredSize().height;
-        int x = (pos.getX() + 1) * Game.cellSize;
-        int y = (pos.getY() + 1) * Game.cellSize;
-        if(x + width > game.getMapDimension().width * Game.cellSize ) {
-            x = pos.getX() * Game.cellSize - width;
+        int x = (pos.getY() + 1) * Game.cellSize;
+        int y = (pos.getX() + 1) * Game.cellSize;
+        if(x + width > game.getMapDimension().height * Game.cellSize ) {
+            x = pos.getY() * Game.cellSize - width;
         }
-        if(game.getMapDimension().height - pos.getY() < 3) {
-            y = pos.getY() * Game.cellSize - height;
+        if(game.getMapDimension().width - pos.getX() < 3) {
+            y = pos.getX() * Game.cellSize - height;
         }
         castlePanel.setBounds(
-                x,
-                y,
-                width,
-                height);
+            x,
+            y,
+            width,
+            height);
         layeredPane.add(castlePanel, new Integer(1));
     }
     private void hideErrorMessage() {
@@ -519,7 +519,7 @@ public class GameView {
         }
         String player1 = gameSettings.getPlayer1FieldText();
         String player2 = gameSettings.getPlayer2FieldText();
-        game = new Game(new Dimension(col, row), player1, player2);
+        game = new Game(new Dimension(row, col), player1, player2);
         castlePanel.setUpGame(game);
         
         gameArea.setGame(game);
@@ -537,7 +537,7 @@ public class GameView {
         int x = (int)p.getX() / Game.cellSize;
         int y = (int)p.getY() / Game.cellSize;
         
-        return new Position(x, y);
+        return new Position(y, x);
     }
     private void updateStatLabel() {
         statLabel.setText(game.getActivePlayer().getName()

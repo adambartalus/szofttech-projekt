@@ -105,8 +105,8 @@ public class GameArea extends JPanel{
         Dimension d = this.game.getMapDimension();
         setPreferredSize(
             new Dimension(
-                (int)d.getWidth() * Game.cellSize,
-                (int)d.getHeight() * Game.cellSize)
+                (int)d.getHeight()* Game.cellSize,
+                (int)d.getWidth() * Game.cellSize)
         );
     }
     public void setPointedCell(Position p) {
@@ -128,8 +128,8 @@ public class GameArea extends JPanel{
             for(int j = 0; j < (int)d.getHeight(); j++) {
                 g2.drawImage(
                     grass_tile,
-                    i*Game.cellSize,
                     j*Game.cellSize,
+                    i*Game.cellSize,
                     Game.cellSize,
                     Game.cellSize,
                     null
@@ -139,8 +139,8 @@ public class GameArea extends JPanel{
         if(null != pointedCell) {
             g2.setColor(new Color(200, 200, 50, 120));
             g2.fillRect(
-                    pointedCell.getX() * Game.cellSize,
                     pointedCell.getY() * Game.cellSize,
+                    pointedCell.getX() * Game.cellSize,
                     Game.cellSize,
                     Game.cellSize
             );
@@ -154,8 +154,8 @@ public class GameArea extends JPanel{
         pos = game.getPlayer(0).getCastlePosition();
         g2.drawImage(
                 castle_blue,
-                pos.getX() * Game.cellSize,
                 pos.getY() * Game.cellSize,
+                pos.getX() * Game.cellSize,
                 Game.cellSize,
                 Game.cellSize,
                 null
@@ -169,29 +169,29 @@ public class GameArea extends JPanel{
             else if(game.getTowerAtPos(p).type=='l')
             	toDraw = tower_long_blue;
             g2.drawImage(
-                    toDraw,
-                    p.getX() *Game.cellSize,
+                toDraw,
+                p.getY() *Game.cellSize,
+                p.getX() *Game.cellSize,
+                Game.cellSize,
+                Game.cellSize,
+                null
+            );
+            if(game.getTowerAtPos(p).freeze)
+                g2.drawImage(
+                    freeze,
                     p.getY() *Game.cellSize,
+                    p.getX() *Game.cellSize,
                     Game.cellSize,
                     Game.cellSize,
                     null
                 );
-            if(game.getTowerAtPos(p).freeze)
-	            g2.drawImage(
-	                    freeze,
-	                    p.getX() *Game.cellSize,
-	                    p.getY() *Game.cellSize,
-	                    Game.cellSize,
-	                    Game.cellSize,
-	                    null
-	                );
         }
         //second player's castle
         pos = game.getPlayer(1).getCastlePosition();
         g2.drawImage(
                 castle_red,
-                pos.getX() *Game.cellSize,
                 pos.getY() *Game.cellSize,
+                pos.getX() *Game.cellSize,
                 Game.cellSize,
                 Game.cellSize,
                 null
@@ -205,28 +205,28 @@ public class GameArea extends JPanel{
             	toDraw = tower_long_red;
             g2.drawImage(
                     toDraw,
-                    p.getX() *Game.cellSize,
                     p.getY() *Game.cellSize,
+                    p.getX() *Game.cellSize,
                     Game.cellSize,
                     Game.cellSize,
                     null
                 );
             if(game.getTowerAtPos(p).freeze)
-	            g2.drawImage(
-	                    freeze,
-	                    p.getX() *Game.cellSize,
-	                    p.getY() *Game.cellSize,
-	                    Game.cellSize,
-	                    Game.cellSize,
-	                    null
-	                );
+                g2.drawImage(
+                    freeze,
+                    p.getY() *Game.cellSize,
+                    p.getX() *Game.cellSize,
+                    Game.cellSize,
+                    Game.cellSize,
+                    null
+                );
         }
         //obstacles
         for(Position p : game.getObstaclePositions()) {
         	g2.drawImage(
                     mountain_tile,
-                    p.getX() * Game.cellSize,
                     p.getY() * Game.cellSize,
+                    p.getX() * Game.cellSize,
                     Game.cellSize,
                     Game.cellSize,
                     null
@@ -255,74 +255,70 @@ public class GameArea extends JPanel{
             	else
             		toDraw = unit_basic_red;
             }
-            	
         	g2.drawImage(
                     toDraw,
-                    u.getPosition().getX() *Game.cellSize,
-                    u.getPosition().getY() *Game.cellSize,
+                    u.getPosition().getY() * Game.cellSize,
+                    u.getPosition().getX() * Game.cellSize,
                     Game.cellSize,
                     Game.cellSize,
                     null
                 );
         }
-        
         //goldmines
-        
         for(Position p : game.getGoldminePositions()) {
-        	Image toDraw;
-        	if(game.getGoldmineAtPos(p).getOwner()== game.getPlayer(0))
-        		toDraw = mine_blue;
-        	else
-        		toDraw = mine_red;
+            Image toDraw;
+            if(game.getGoldmineAtPos(p).getOwner()== game.getPlayer(0))
+                toDraw = mine_blue;
+            else
+                toDraw = mine_red;
             g2.drawImage(
                     toDraw,
-                    p.getX() * Game.cellSize,
                     p.getY() * Game.cellSize,
+                    p.getX() * Game.cellSize,
                     Game.cellSize,
                     Game.cellSize,
                     null
                 );
         }
-        
         //Spell effects
         for(ActiveSpell as : game.activeSpells) {
-        	if(as.type == 'f')
-	        	g2.drawImage(
-	                    freeze,
-	                    as.pos.getX() * Game.cellSize,
-	                    as.pos.getY() * Game.cellSize,
-	                    Game.cellSize,
-	                    Game.cellSize,
-	                    null
-	                );
+            if(as.type == 'f')
+                g2.drawImage(
+                    freeze,
+                    as.pos.getY() * Game.cellSize,
+                    as.pos.getX() * Game.cellSize,
+                    Game.cellSize,
+                    Game.cellSize,
+                    null
+                );
         	else if(as.type == 'h')
-	        	g2.drawImage(
-	                    heal,
-	                    as.pos.getX() * Game.cellSize,
-	                    as.pos.getY() * Game.cellSize,
-	                    Game.cellSize,
-	                    Game.cellSize,
-	                    null
-	                );
+                    g2.drawImage(
+                        heal,
+                        as.pos.getY() * Game.cellSize,
+                        as.pos.getX() * Game.cellSize,
+                        Game.cellSize,
+                        Game.cellSize,
+                        null
+                    );
         	else if(as.type == 'm')
-	        	g2.drawImage(
-	                    meteor,
-	                    as.pos.getX() * Game.cellSize,
-	                    as.pos.getY() * Game.cellSize,
-	                    Game.cellSize*3,
-	                    Game.cellSize*3,
-	                    null
-	                );
+                    g2.drawImage(
+                        meteor,
+                        as.pos.getY() * Game.cellSize,
+                        as.pos.getX() * Game.cellSize,
+                        Game.cellSize*3,
+                        Game.cellSize*3,
+                        null
+                    );
         }
         
         //outline for selected cell
         if(null != selectedBuildingPos) {
             g2.setColor(Color.YELLOW);
             g2.drawRect(
-                    selectedBuildingPos.getX() * Game.cellSize,
-                    selectedBuildingPos.getY() * Game.cellSize,
-                    Game.cellSize,
-                    Game.cellSize
+                selectedBuildingPos.getY() * Game.cellSize,
+                selectedBuildingPos.getX() * Game.cellSize,
+                Game.cellSize,
+                Game.cellSize
             );
         }
         //tower shot lines
@@ -330,10 +326,10 @@ public class GameArea extends JPanel{
         for(TowerShot ts : game.getTowerShots()) {
             if(ts.getUnit().getHp() <= 0) continue;
             g2.drawLine(
-                ts.getTower().getPosition().getX() * Game.cellSize + Game.cellSize / 2,
                 ts.getTower().getPosition().getY() * Game.cellSize + Game.cellSize / 2,
-                ts.getUnit().getPosition().getX() * Game.cellSize + Game.cellSize / 2,
-                ts.getUnit().getPosition().getY() * Game.cellSize + Game.cellSize / 2
+                ts.getTower().getPosition().getX() * Game.cellSize + Game.cellSize / 2,
+                ts.getUnit().getPosition().getY() * Game.cellSize + Game.cellSize / 2,
+                ts.getUnit().getPosition().getX() * Game.cellSize + Game.cellSize / 2
             );
         }
     }

@@ -7,8 +7,8 @@ public class ObstacleUnit extends Unit {
     
     public static final int COST = 60;
     
-    public ObstacleUnit(Position pos) {
-        super(pos, 1, 350, 100);
+    public ObstacleUnit(Position pos, Position goalPos) {
+        super(pos, goalPos, 1, 350, 100);
         ignoreObstacle = true;
         type = 'o';
     }

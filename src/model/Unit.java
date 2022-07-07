@@ -9,6 +9,7 @@ import java.util.Collections;
 public class Unit {
     
     private Position position;
+    private Position goalPosition;
     protected int speed;
     protected int hp;
     private final int maxHp;
@@ -19,8 +20,9 @@ public class Unit {
     private int damage;
     public char type;
     
-    public Unit(Position pos, int speed, int hp, int damage) {
+    public Unit(Position pos, Position goalPos, int speed, int hp, int damage) {
         this.position = pos;
+        this.goalPosition = goalPos;
         this.speed = speed;
         this.hp = hp;
         this.maxHp = hp;
@@ -75,7 +77,7 @@ public class Unit {
      * @param collisionMap
      */
     public void step(int[][] collisionMap) {
-    	findPath(path.get(path.size()-1), collisionMap);
+    	findPath(collisionMap);
     	for(int i = 0; (i < speed) && (path.size() > 1); i++) {
             path.remove(0);
             position = path.get(0);
@@ -84,11 +86,10 @@ public class Unit {
     /**
      * Finds the shortest path to the {@code goal } using the A* algorithm
      * and stores it in the {@code path } attribute
-     * @param goal the goal position
      * @param collisionMap
      */
-    public void findPath(Position goal, int[][] collisionMap) {
-    	
+    public void findPath(int[][] collisionMap) {
+    	Position goal = goalPosition;
     	//Initializes node lists
     	path = new ArrayList<Position>();
     	ArrayList<Node> openNodes = new ArrayList<>();
@@ -137,20 +138,20 @@ public class Unit {
 
             //Tries to open new nodes in four directions
             Position posN = null;
-            if(currentNode.pos.getY()>0) {
-                posN = new Position(currentNode.pos.getX(),currentNode.pos.getY()-1);
+            if(currentNode.pos.getX() > 0) {
+                posN = new Position(currentNode.pos.getX() - 1,currentNode.pos.getY());
             }
             Position posS = null;
-            if(currentNode.pos.getY()<Game.map[0].length-1) {
-                posS = new Position(currentNode.pos.getX(),currentNode.pos.getY()+1);
+            if(currentNode.pos.getX() < collisionMap.length - 1) {
+                posS = new Position(currentNode.pos.getX() + 1,currentNode.pos.getY());
             }
             Position posW = null;
-            if(currentNode.pos.getX()>0) {
-                posW = new Position(currentNode.pos.getX()-1,currentNode.pos.getY());
+            if(currentNode.pos.getY() > 0) {
+                posW = new Position(currentNode.pos.getX(),currentNode.pos.getY() - 1);
             }
             Position posE = null;
-            if(currentNode.pos.getX()<Game.map.length-1) {
-                posE = new Position(currentNode.pos.getX()+1,currentNode.pos.getY());
+            if(currentNode.pos.getY() < collisionMap[0].length - 1) {
+                posE = new Position(currentNode.pos.getX(),currentNode.pos.getY() + 1);
             }
 
             for(int i = 0; i < closedNodes.size(); i++) {
@@ -189,12 +190,11 @@ public class Unit {
                     posE = null;
                 }
             }
-
             if(posN != null) {
-                Node child = new Node(currentNode,currentNode.g+1,posN);
-                child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
+                Node child = new Node(currentNode, currentNode.g+1, posN);
+                child.h = (child.pos.getX() - endNode.pos.getX()) * (child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
                 child.f = child.g + child.h;
-                if((collisionMap[child.pos.getY()][child.pos.getX()] == 0) || ignoreObstacle)
+                if((collisionMap[child.pos.getX()][child.pos.getY()] == 0) || ignoreObstacle)
                     openNodes.add(child);
                 else
                     closedNodes.add(child);
@@ -204,7 +204,7 @@ public class Unit {
                 Node child = new Node(currentNode,currentNode.g+1,posS);
                 child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
                 child.f = child.g + child.h;
-                if((collisionMap[child.pos.getY()][child.pos.getX()] == 0) || ignoreObstacle)
+                if((collisionMap[child.pos.getX()][child.pos.getY()] == 0) || ignoreObstacle)
                     openNodes.add(child);
                 else
                     closedNodes.add(child);
@@ -214,7 +214,7 @@ public class Unit {
                 Node child = new Node(currentNode,currentNode.g+1,posW);
                 child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
                 child.f = child.g + child.h;
-                if((collisionMap[child.pos.getY()][child.pos.getX()] == 0) || ignoreObstacle)
+                if((collisionMap[child.pos.getX()][child.pos.getY()] == 0) || ignoreObstacle)
                     openNodes.add(child);
                 else
                     closedNodes.add(child);
@@ -224,7 +224,7 @@ public class Unit {
                 Node child = new Node(currentNode,currentNode.g+1,posE);
                 child.h = (child.pos.getX()-endNode.pos.getX())*(child.pos.getX()-endNode.pos.getX()) + (child.pos.getY()-endNode.pos.getY())*(child.pos.getY()-endNode.pos.getY());
                 child.f = child.g + child.h;
-                if((collisionMap[child.pos.getY()][child.pos.getX()] == 0) || ignoreObstacle)
+                if((collisionMap[child.pos.getX()][child.pos.getY()] == 0) || ignoreObstacle)
                     openNodes.add(child);
                 else
                     closedNodes.add(child);
