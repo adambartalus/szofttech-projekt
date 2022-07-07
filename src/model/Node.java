@@ -18,7 +18,7 @@ public class Node {
 	 * Checks whether another node has the same position
      * @param other the node to check equality with
      */
-	public boolean equal (Node other) {
-			return ((this.pos.getX() == other.pos.getX())&&(this.pos.getY() == other.pos.getY()));
+	public boolean equals (Node other) {
+            return this.pos.equals(other.pos);
 	}
 }

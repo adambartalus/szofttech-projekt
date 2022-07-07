@@ -94,7 +94,6 @@ public class Unit {
     	path = new ArrayList<Position>();
     	ArrayList<Node> openNodes = new ArrayList<>();
     	ArrayList<Node> closedNodes = new ArrayList<>();
-    	
     	//Initializes start and end nodes
     	Node startNode = new Node(null, 0, position);
     	startNode.f = 0;
@@ -122,7 +121,7 @@ public class Unit {
             closedNodes.add(currentNode);
 
             //Checks if the current node is at the end
-            if(currentNode.equal(endNode)) {
+            if(currentNode.equals(endNode)) {
                 Node tmpCurrentNode = currentNode;
                 while(tmpCurrentNode != null) {
                     path.add(tmpCurrentNode.pos);
@@ -156,37 +155,37 @@ public class Unit {
 
             for(int i = 0; i < closedNodes.size(); i++) {
                 Node tmpNode = new Node(null,0,posN);
-                if(tmpNode.pos!= null && closedNodes.get(i).equal(tmpNode)) {
+                if(tmpNode.pos!= null && closedNodes.get(i).equals(tmpNode)) {
                     posN = null;
                 }
                 tmpNode = new Node(null,0,posS);
-                if(tmpNode.pos!= null && closedNodes.get(i).equal(tmpNode)) {
+                if(tmpNode.pos!= null && closedNodes.get(i).equals(tmpNode)) {
                     posS = null;
                 }
                 tmpNode = new Node(null,0,posW);
-                if(tmpNode.pos!= null && closedNodes.get(i).equal(tmpNode)) {
+                if(tmpNode.pos!= null && closedNodes.get(i).equals(tmpNode)) {
                     posW = null;
                 }
                 tmpNode = new Node(null,0,posE);
-                if(tmpNode.pos!= null && closedNodes.get(i).equal(tmpNode)) {
+                if(tmpNode.pos!= null && closedNodes.get(i).equals(tmpNode)) {
                     posE = null;
                 }
             }
             for(int i = 0; i < openNodes.size(); i++) {
                 Node tmpNode = new Node(null,0,posN);
-                if(tmpNode.pos!= null && openNodes.get(i).equal(tmpNode)) {
+                if(tmpNode.pos!= null && openNodes.get(i).equals(tmpNode)) {
                     posN = null;
                 }
                 tmpNode = new Node(null,0,posS);
-                if(tmpNode.pos!= null && openNodes.get(i).equal(tmpNode)) {
+                if(tmpNode.pos!= null && openNodes.get(i).equals(tmpNode)) {
                     posS = null;
                 }
                 tmpNode = new Node(null,0,posW);
-                if(tmpNode.pos!= null && openNodes.get(i).equal(tmpNode)) {
+                if(tmpNode.pos!= null && openNodes.get(i).equals(tmpNode)) {
                     posW = null;
                 }
                 tmpNode = new Node(null,0,posE);
-                if(tmpNode.pos!= null && openNodes.get(i).equal(tmpNode)) {
+                if(tmpNode.pos!= null && openNodes.get(i).equals(tmpNode)) {
                     posE = null;
                 }
             }

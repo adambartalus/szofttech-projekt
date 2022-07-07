@@ -26,9 +26,9 @@ public class MainMenu extends JPanel {
         exitButton.setMaximumSize(new Dimension(200, 30));
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setPreferredSize(new Dimension(500, 500));
+        setPreferredSize(new Dimension(300, 300));
         
-        add(Box.createRigidArea(new Dimension(0, 200)));
+        add(Box.createRigidArea(new Dimension(0, 100)));
         add(newGameButton);
         add(Box.createRigidArea(new Dimension(0, 10)));
         add(exitButton);

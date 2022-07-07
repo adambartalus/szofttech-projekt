@@ -1,8 +1,11 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,43 +22,35 @@ public class GameSettings extends JPanel {
     public GameSettings(GameView gv) {
         
         rowField = new JTextField();
-        rowField.setSize(new Dimension(30, 25));
-        rowField.setLocation(250, 150);
+        rowField.setMaximumSize(new Dimension(50, 30));
+        rowField.setBorder(null);
         colField = new JTextField();
-        colField.setSize(new Dimension(30, 25));
-        colField.setLocation(250, 180);
+        colField.setMaximumSize(new Dimension(50, 30));
+        colField.setBorder(null);
         
         JLabel rowLabel = new JLabel("Rows: ");
-        rowLabel.setSize(new Dimension(50, 25));
-        rowLabel.setLocation(205, 150);
-        
         JLabel colLabel = new JLabel("Cols: ");
-        colLabel.setSize(new Dimension(50, 25));
-        colLabel.setLocation(210, 180);
         
         player1NameField = new JTextField("Player1");
-        player1NameField.setSize(new Dimension(100, 25));
-        player1NameField.setLocation(250, 210);
+        player1NameField.setMaximumSize(new Dimension(300, 30));
+        player1NameField.setBorder(null);
         player2NameField = new JTextField("Player2");
-        player2NameField.setSize(new Dimension(100, 25));
-        player2NameField.setLocation(250, 240);
+        player2NameField.setMaximumSize(new Dimension(300, 30));
+        player2NameField.setBorder(null);
         
         JLabel p1 = new JLabel("Player 1: ");
-        p1.setSize(new Dimension(60, 25));
-        p1.setLocation(190, 210);
         JLabel p2 = new JLabel("Player 2: ");
-        p2.setSize(new Dimension(60, 25));
-        p2.setLocation(190, 240);
         
         JButton startGameButton = new JButton("Start Game");
+        startGameButton.setMaximumSize(new Dimension(1000, 30));
+        startGameButton.setBorder(null);
         startGameButton.addActionListener((ActionEvent e) -> {
             gv.startNewGame();
         });
-        startGameButton.setSize(new Dimension(100, 25));
-        startGameButton.setMargin(new Insets(0, 0, 0, 0));
-        startGameButton.setLocation(210, 270);
         
-        setLayout(null);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setBackground(new Color(140, 140, 140));
         add(rowLabel);
         add(rowField);
         add(colLabel);
@@ -64,6 +59,7 @@ public class GameSettings extends JPanel {
         add(player1NameField);
         add(p2);
         add(player2NameField);
+        add(Box.createRigidArea(new Dimension(0,20)));
         add(startGameButton);
     }
     public String getRowFieldText() {

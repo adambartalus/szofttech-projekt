@@ -5,7 +5,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -13,8 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -68,14 +66,11 @@ public class GameView {
     private final JTable unitInfoTable;
     private final JPanel unitInfoPanel;
     
-    private final JPanel testPanel;
-    
     private JPanel activeControlPanel;
     
     private final JPanel mainControlPanel;
     private final JPanel mainUpperControlPanel;
     private final JPanel towerButtonPanel;
-    private final JPanel unitButtonPanel;
     
     private final JPanel spellPanel;
     private final JPanel towerPanel;
@@ -127,11 +122,10 @@ public class GameView {
         });
         
         layeredPane = new JLayeredPane();
+
         
-        testPanel = new JPanel();
-        testPanel.setLayout(new BoxLayout(testPanel, BoxLayout.X_AXIS));
-        
-        gamePanel = new JPanel(new BorderLayout());
+        gamePanel = new JPanel();
+        gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.X_AXIS));
         
         statPanel = new JPanel();
         statPanel.setLayout(new BoxLayout(statPanel, BoxLayout.Y_AXIS));
@@ -145,6 +139,7 @@ public class GameView {
         unitInfoTable = new JTable();
         unitScrollPane = new JScrollPane(unitInfoTable);
         unitInfoPanel = new JPanel();
+        unitInfoPanel.setVisible(false);
         unitInfoPanel.setLayout(new BorderLayout(0,5));
         unitInfoPanel.setPreferredSize(new Dimension(0, 100));
         unitInfoPanel.add(unitScrollPane, BorderLayout.CENTER);
@@ -153,7 +148,7 @@ public class GameView {
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setActiveControlPanel(MAIN_CONTROL_PANEL);
+                hideUnitInfoPanel();
                 gameArea.setSelectedBuildingPos(null);
             }
             
@@ -161,10 +156,10 @@ public class GameView {
         unitInfoPanel.add(cancelButton, BorderLayout.EAST);
         
         spellPanel = new JPanel();
-        spellPanel.setLayout(new BoxLayout(spellPanel, BoxLayout.X_AXIS));
+        spellPanel.setLayout(new BoxLayout(spellPanel, BoxLayout.Y_AXIS));
         
         towerPanel = new JPanel();
-        towerPanel.setLayout(new GridLayout(0, 2));
+        towerPanel.setLayout(new BoxLayout(towerPanel, BoxLayout.Y_AXIS));
         towerStatPanel = new JPanel();
         towerStatPanel.setLayout(new BoxLayout(towerStatPanel, BoxLayout.Y_AXIS));
         towerNameLabel = new JLabel();
@@ -181,8 +176,10 @@ public class GameView {
         towerStatPanel.add(towerRangeLabel);
         
         activeControlPanel = new JPanel(new CardLayout());
+        activeControlPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         mainUpperControlPanel = new JPanel();
+        mainUpperControlPanel.setLayout(new BoxLayout(mainUpperControlPanel, BoxLayout.Y_AXIS));
         towerControlPanel = new JPanel();
         towerControlPanel.setLayout(new BoxLayout(towerControlPanel, BoxLayout.Y_AXIS));
         
@@ -221,8 +218,6 @@ public class GameView {
         
         towerButtonPanel = new JPanel();
         towerButtonPanel.setLayout(new BoxLayout(towerButtonPanel,BoxLayout.Y_AXIS));
-        unitButtonPanel = new JPanel();
-        unitButtonPanel.setLayout(new BoxLayout(unitButtonPanel, BoxLayout.Y_AXIS));
         
         gameArea.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -272,11 +267,7 @@ public class GameView {
                             displayCastlePanel(pos);
                             return;
                         }
-                        ArrayList<Unit> units = game.getUnitsAtPos(pos);
-                        unitInfoTable.setModel(new UnitInfoTableModel(units));
-                        ((CardLayout)(activeControlPanel.getLayout())).show(
-                                activeControlPanel, UNIT_INFO_PANEL);
-                        frame.pack();
+                        displayUnitInfoPanel(pos);
                     }
                     return ;
                 }
@@ -356,8 +347,8 @@ public class GameView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(game.getActivePlayer().getGold()>=HealSpell.cost) {
-                	game.getActivePlayer().decreaseGold(HealSpell.cost);
-                	selectedSpell = new HealSpell();
+                    game.getActivePlayer().decreaseGold(HealSpell.cost);
+                    selectedSpell = new HealSpell();
                 }
             }
         });
@@ -366,6 +357,7 @@ public class GameView {
          * Button processing a turn
          */
         JButton turnButton = new JButton("Turn");
+        turnButton.setMaximumSize(new Dimension(1000, 30));
         turnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -375,7 +367,6 @@ public class GameView {
                 }
             }
         });
-        turnButton.setPreferredSize(new Dimension(160,30));
         
         statPanel.add(statLabel);
         
@@ -394,32 +385,39 @@ public class GameView {
         spellPanel.add(healButton);
         
         mainUpperControlPanel.add(towerButtonPanel);
-        mainUpperControlPanel.add(unitButtonPanel);
-        mainUpperControlPanel.add(turnButton);
         
         mainControlPanel = new JPanel();
         mainControlPanel.setLayout(new BoxLayout(mainControlPanel, BoxLayout.Y_AXIS));
         mainControlPanel.add(mainUpperControlPanel);
+        mainControlPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         mainControlPanel.add(spellPanel);
-        mainControlPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainControlPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        mainControlPanel.add(turnButton);
         
         towerPanel.add(towerStatPanel);
         towerPanel.add(towerControlPanel);
         
+        towerControlPanel.setBorder(BorderFactory.createLineBorder(Color.yellow));
+        towerPanel.setBorder(BorderFactory.createLineBorder(Color.yellow));
+        
         activeControlPanel.add(mainControlPanel, MAIN_CONTROL_PANEL);
         activeControlPanel.add(towerPanel, TOWER_CONTROL_PANEL);
-        activeControlPanel.add(unitInfoPanel, UNIT_INFO_PANEL);
         ((CardLayout)(activeControlPanel.getLayout())).show(activeControlPanel, MAIN_CONTROL_PANEL);
         
-        gamePanel.add(statPanel, BorderLayout.NORTH);
-        gamePanel.add(layeredPane, BorderLayout.CENTER);
-        gamePanel.add(activeControlPanel, BorderLayout.SOUTH);
+        //gamePanel.add(statPanel, BorderLayout.NORTH);
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.add(layeredPane);
+        p.add(unitInfoPanel);
+        gamePanel.add(p);
+        gamePanel.add(activeControlPanel);
         
         cards.add(mainMenu, "Menu");
         cards.add(gameSettings, "Settings");
         cards.add(gamePanel, "Game");
         
-        errorPanel = new JPanel();
+        errorPanel = new JPanel(new BorderLayout());
+        errorPanel.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
         errorPanel.setBackground(Color.red);
         errorLabel = new JLabel();
         JButton closeBtn = new JButton("X");
@@ -442,8 +440,8 @@ public class GameView {
                 hideErrorMessage();
             }
         });
-        errorPanel.add(errorLabel);
-        errorPanel.add(closeBtn);
+        errorPanel.add(errorLabel, BorderLayout.WEST);
+        errorPanel.add(closeBtn, BorderLayout.EAST);
         errorPanel.setVisible(false);
         
         JPanel main = new JPanel();
@@ -467,9 +465,16 @@ public class GameView {
         towerDamageLabel.setText("Damage: " + t.getDamage());
         towerRangeLabel.setText("Range: " + t.getRange());
     }
+    void displayUnitInfoPanel(Position pos) {
+        ArrayList<Unit> units = game.getUnitsAtPos(pos);
+        unitInfoTable.setModel(new UnitInfoTableModel(units));
+        unitInfoPanel.setVisible(true);
+        frame.pack();
+    }
     void displayErrorMessage(String message) {
         errorLabel.setText(message);
         errorPanel.setVisible(true);
+        frame.pack();
     }
     void displayCastlePanel(Position pos) {
         int width = castlePanel.getPreferredSize().width;
@@ -489,8 +494,13 @@ public class GameView {
             height);
         layeredPane.add(castlePanel, new Integer(1));
     }
+    private void hideUnitInfoPanel() {
+        unitInfoPanel.setVisible(false);
+        frame.pack();
+    }
     private void hideErrorMessage() {
         errorPanel.setVisible(false);
+        frame.pack();
     }
     private void hideCastlePanel() {
         layeredPane.remove(castlePanel);

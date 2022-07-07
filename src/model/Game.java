@@ -170,7 +170,7 @@ public class Game {
             throw new NotEnoughGoldException();
         }
         u.owner = players[activePlayerIndex];
-    	u.findPath(createCollisionMap());
+    	u.findPath(createCollisionMapWithoutCastles());
         this.units.add(u);
         players[activePlayerIndex].addUnit(u);
         players[activePlayerIndex].decreaseGold(cost);
@@ -201,7 +201,7 @@ public class Game {
             throw new NotAvailableBuildingPositionException();
         }
         // Checking if new tower blocks the path to the castle
-        int[][] cMap = createCollisionMap();
+        int[][] cMap = createCollisionMapWithoutCastles();
         cMap[pos.getX()][pos.getY()] = 1;
         Unit testunit = new StrongUnit(
             getActivePlayer().getCastlePosition(),
@@ -349,6 +349,15 @@ public class Game {
         }
         return cMap;
     }
+    int[][] createCollisionMapWithoutCastles() {
+        int[][] cMap = createCollisionMap();
+        Position p = players[0].getCastlePosition();
+        cMap[p.getX()][p.getY()] = 0;
+        p = players[1].getCastlePosition();
+        cMap[p.getX()][p.getY()] = 0;
+        
+        return cMap;
+    }
     public void upgradeTower(Tower tower) throws NotEnoughGoldException {
         if(tower.getOwner().getGold() < tower.upgradecost) {
             throw new NotEnoughGoldException();
@@ -365,7 +374,7 @@ public class Game {
         
         reloadObstacles();
         units.forEach(u -> {
-            u.step(createCollisionMap());
+            u.step(createCollisionMapWithoutCastles());
             if(isUnitAtOpponentCastle(u)) {
                 getOpponentOf(u.getOwner()).damageCastleHp(u.getDamage());
                 u.takeDamage(u.getHp());
@@ -390,7 +399,7 @@ public class Game {
                     if(rand.nextInt(1000) < 1 && map[i][j]) {
                     Unit newunit = new StrongUnit(new Position(i,j), getActivePlayer().getCastlePosition());
                     newunit.owner = neutral;
-                    newunit.findPath(createCollisionMap());
+                    newunit.findPath(createCollisionMapWithoutCastles());
                     getUnits().add(newunit);
                 }
             }
