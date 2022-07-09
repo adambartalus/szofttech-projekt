@@ -6,7 +6,7 @@ import javax.swing.table.AbstractTableModel;
 public class UnitInfoTableModel extends AbstractTableModel {
     
     private final ArrayList<Unit> units;
-    private final String[] colNames = new String[]{"Player", "Hp", "Speed"};
+    private final String[] colNames = new String[]{"Owner", "Hp", "Speed"};
 
     public UnitInfoTableModel(ArrayList<Unit> units) {
         this.units = units;

@@ -6,9 +6,11 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 
 import model.ActiveSpell;
@@ -25,45 +27,42 @@ public class GameArea extends JPanel{
 
     public Game game;
     
-    private Image grass_tile;
-    private Image mountain_tile;
-    private Image unit_basic_red;
+    public static Image grass_tile;
+    public static Image mountain_tile;
+    public static Image unit_basic_red;
     public static Image unit_strong_red;
-    public static Image unit_fast_red;
-    public static Image unit_flying_red;
-    private Image castle_red;
-    private Image tower_short_red;
-    private Image tower_basic_red;
-    private Image tower_long_red;
-    private Image mine_red;
-    private Image unit_basic_blue;
-    private Image unit_strong_blue;
-    private Image unit_fast_blue;
-    private Image unit_flying_blue;
-    private Image castle_blue;
-    private Image tower_short_blue;
-    private Image tower_basic_blue;
-    private Image tower_long_blue;
-    private Image mine_blue;
-    private Image unit_strong_black;
-    private Image meteor;
-    private Image freeze;
-    private Image heal;
+    public static Image red_dragon;
+    public static Image red_knight;
+    public static Image castle_red;
+    public static Image tower_short_red;
+    public static Image tower_basic_red;
+    public static Image tower_long_red;
+    public static Image mine_red;
+    public static Image unit_basic_blue;
+    public static Image unit_strong_blue;
+    public static Image blue_knight;
+    public static Image blue_dragon;
+    public static Image castle_blue;
+    public static Image tower_short_blue;
+    public static Image tower_basic_blue;
+    public static Image tower_long_blue;
+    public static Image mine_blue;
+    public static Image unit_strong_black;
+    public static Image meteor;
+    public static Image freeze;
+    public static Image heal;
+    
     private Position pointedCell;
     private Position selectedBuildingPos;
+    
+    private Icon chosenBuildingImage;
+    private Point chosenBuildingImagePos;
    
     static {
         try {
             unit_strong_red = ResourceLoader.loadImage("res/redstrong.png");
-            unit_fast_red = ResourceLoader.loadImage("res/redknight.png");
-            unit_flying_red = ResourceLoader.loadImage("res/reddragon.png");
-        } catch (IOException ex) {
-            Logger.getLogger(GameArea.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    public GameArea() {
-        try {
+            red_dragon = ResourceLoader.loadImage("res/redknight.png");
+            red_knight = ResourceLoader.loadImage("res/reddragon.png");
             grass_tile = ResourceLoader.loadImage("res/grass_tile.png");
             mountain_tile = ResourceLoader.loadImage("res/mountain.png");
             unit_basic_red = ResourceLoader.loadImage("res/redbasic.png");
@@ -74,8 +73,8 @@ public class GameArea extends JPanel{
             tower_long_red = ResourceLoader.loadImage("res/towerlongred.png");
             unit_basic_blue = ResourceLoader.loadImage("res/bluebasic.png");
             unit_strong_blue = ResourceLoader.loadImage("res/bluestrong.png");
-            unit_fast_blue = ResourceLoader.loadImage("res/blueknight.png");
-            unit_flying_blue = ResourceLoader.loadImage("res/bluedragon.png");
+            blue_knight = ResourceLoader.loadImage("res/blueknight.png");
+            blue_dragon = ResourceLoader.loadImage("res/bluedragon.png");
             castle_blue = ResourceLoader.loadImage("res/castleblue.png");
             mine_blue = ResourceLoader.loadImage("res/mineblue.png");
             tower_short_blue = ResourceLoader.loadImage("res/towershortblue.png");
@@ -85,15 +84,18 @@ public class GameArea extends JPanel{
             meteor = ResourceLoader.loadImage("res/explosion.png");
             freeze = ResourceLoader.loadImage("res/ice.png");
             heal = ResourceLoader.loadImage("res/heal.png");
-        } catch(Exception e) {
-            
+        } catch (IOException ex) {
+            Logger.getLogger(GameArea.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public GameArea() {
+        
     }
     /**
      * @param game the object storing the game parameters
      */
     public GameArea(Game game) {
-        this();
         this.game = game;
         
         adjustSize();
@@ -237,21 +239,21 @@ public class GameArea extends JPanel{
         	Image toDraw = unit_strong_black;
             if(u.owner == game.getPlayer(0)) {
             	if(u.type == 'o')
-            		toDraw = unit_flying_blue;
+            		toDraw = blue_dragon;
             	else if(u.type == 's')
             		toDraw = unit_strong_blue;
             	else if(u.type == 'f')
-            		toDraw = unit_fast_blue;
+            		toDraw = blue_knight;
             	else
             		toDraw = unit_basic_blue;
             }
             else if(u.owner == game.getPlayer(1)) {
             	if(u.type == 'o')
-            		toDraw = unit_flying_red;
+            		toDraw = red_knight;
             	else if(u.type == 's')
             		toDraw = unit_strong_red;
             	else if(u.type == 'f')
-            		toDraw = unit_fast_red;
+            		toDraw = red_dragon;
             	else
             		toDraw = unit_basic_red;
             }
@@ -262,6 +264,20 @@ public class GameArea extends JPanel{
                     Game.cellSize,
                     Game.cellSize,
                     null
+                );
+                g2.setColor(Color.red);
+                g2.fillRect(
+                    u.getPosition().getY() * Game.cellSize,
+                    u.getPosition().getX() * Game.cellSize - 10,
+                    (int) (Game.cellSize * ((double)u.getHp() / u.getMaxHp())),
+                    5
+                );
+                g2.setColor(Color.black);
+                g2.drawRect(
+                    u.getPosition().getY() * Game.cellSize,
+                    u.getPosition().getX() * Game.cellSize - 10,
+                    Game.cellSize,
+                    5
                 );
         }
         //goldmines
@@ -332,5 +348,16 @@ public class GameArea extends JPanel{
                 ts.getUnit().getPosition().getX() * Game.cellSize + Game.cellSize / 2
             );
         }
+        if(null != chosenBuildingImage) {
+            chosenBuildingImage.paintIcon(this, g2, chosenBuildingImagePos.x - 25, chosenBuildingImagePos.y - 25);
+        }
+    }
+
+    void setChosenBuildingImagePos(Point point) {
+        chosenBuildingImagePos = point;
+    }
+
+    void setChosenBuildingImage(Icon chosenBuildingImage) {
+        this.chosenBuildingImage = chosenBuildingImage;
     }
 }

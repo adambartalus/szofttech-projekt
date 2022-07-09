@@ -4,12 +4,12 @@ package model;
  * The headquarters building
  */
 public class Castle extends Building {
-    
+    public static final int START_HP = 5000;
     private int hp;
     
     public Castle(Position pos, Player player) {
         super(pos, player);
-        this.hp = 5000;
+        this.hp = START_HP;
     }
     public int getHp() {
         return hp;

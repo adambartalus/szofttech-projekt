@@ -3,7 +3,7 @@ package unit;
 import java.awt.Dimension;
 import org.junit.Test;
 import model.Game;
-import model.ObstacleUnit;
+import model.Dragon;
 import model.Position;
 import model.StrongUnit;
 import model.Unit;
@@ -18,7 +18,7 @@ public class UnitTest {
     public void unitMovement() {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
-        Unit testunit = new ObstacleUnit(new Position(3,3));
+        Unit testunit = new Dragon(new Position(3,3));
         try {
             game.addUnit(testunit);
         } catch (Exception ex) {

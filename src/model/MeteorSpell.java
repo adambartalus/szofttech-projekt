@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 
 public class MeteorSpell implements Spell {
-    public static int cost = 500;
+    public static int COST = 500;
     public void Effect(Position pos, Game game, Player player) {
         ArrayList<Position> positions = new ArrayList<Position>();
         positions.add(pos);
@@ -25,5 +25,8 @@ public class MeteorSpell implements Spell {
             }
         }
         game.activeSpells.add(new ActiveSpell('m',pos));
+    }
+    public int getCost() {
+        return COST;
     }
 }

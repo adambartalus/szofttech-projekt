@@ -1,12 +1,13 @@
 package model;
 
-public class Tower extends Building {
+
+public abstract class Tower extends Building {
 
     protected int range;
     protected int damage;
     protected int rangeinc;
     protected int damageinc;
-    public int upgradecost;
+    protected int goldSpent;
     public boolean aoe;
     public boolean freeze = false;
     
@@ -15,6 +16,13 @@ public class Tower extends Building {
         this.range = range;
         this.damage = damage;
         freeze = false;
+        
+        try {
+            int cost = this.getClass().getField("COST").getInt(null);
+            this.goldSpent = cost;
+        } catch(Exception exc) {
+            
+        }
     }
 
     public int getRange() {
@@ -25,9 +33,25 @@ public class Tower extends Building {
         return damage;
     }
     
+    public int getGoldSpent() {
+        return goldSpent;
+    }
+    
+    
+    public abstract int getCost();
+    
+    public abstract int getUpgradeCost();
+    
     public void upgrade() {
         range += rangeinc;
         damage += damageinc;
+        
+        try {
+            int upgradeCost = this.getClass().getField("UPGRADE_COST").getInt(null);
+            this.goldSpent += upgradeCost;
+        } catch(Exception exc) {
+            
+        }
     }
     
     public void turn(Game g) {

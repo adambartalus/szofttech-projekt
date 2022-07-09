@@ -150,6 +150,10 @@ public class Game {
         goldmines.add(g);
         getActivePlayer().decreaseGold(Goldmine.COST);
     }
+    public void applySpell(Spell spell, Position pos) {
+        getActivePlayer().decreaseGold(spell.getCost());
+        spell.Effect(pos, this, getActivePlayer());
+    }
     public void goldmineTurn() {
         goldmines.forEach(g -> {
             g.turn();
@@ -185,16 +189,17 @@ public class Game {
      * @throws java.lang.Exception
      */
     public void buildTower(Class<?> towerClass, Position pos) throws Exception {
-        Field costField;
-        int cost;
+        Tower tower;
         try {
-            costField = towerClass.getField("COST");
-            cost = costField.getInt(null);
-        } catch (Exception ex) {
-            throw new Exception();
+            Class<?>[] types = new Class[] {Position.class, Player.class};
+            Constructor<?> c = towerClass.getConstructor(types);
+            tower = (Tower)c.newInstance(pos, players[activePlayerIndex]);
+        } catch (Exception e) {
+            System.err.println("Error");
+            return ;
         }
-
-        if(players[activePlayerIndex].getGold() < cost) {
+        
+        if(getActivePlayer().getGold() < tower.getCost()) {
             throw new NotEnoughGoldException();
         }
         if(!canBuildTower(pos)) {
@@ -211,23 +216,14 @@ public class Game {
         if(testunit.path.isEmpty()) {
             throw new NotAvailableBuildingPositionException();
         }
-        //
-        try {
-            Class<?>[] types = new Class[] {Position.class, Player.class};
-            Constructor<?> c = towerClass.getConstructor(types);
-            Tower t = (Tower)c.newInstance(pos, players[activePlayerIndex]);
-            
-            this.towers.add(t);
-            players[activePlayerIndex].addTower(t);
-            players[activePlayerIndex].decreaseGold(cost);
-            
-        } catch (Exception e) {
-            System.err.println("Error");
-        }
+        this.towers.add(tower);
+        getActivePlayer().addTower(tower);
+        getActivePlayer().decreaseGold(tower.getCost());
     }
     public void demolishTower(Tower t) {
         towers.remove(t);
         t.getOwner().removeTower(t);
+        t.getOwner().increaseGold(t.getGoldSpent() / 2);
     }
     public Goldmine getGoldmineAtPos(Position pos) {
         for(Goldmine g : goldmines) {
@@ -306,6 +302,9 @@ public class Game {
             r.nextInt(mapDimension.height)
         );
     }
+    /**
+     * TODO: obstacle cannot block path to castle
+     */
     private void generateRandomObstacles() {
         Random r = new Random();
         int num = 10 + r.nextInt(4);
@@ -359,10 +358,10 @@ public class Game {
         return cMap;
     }
     public void upgradeTower(Tower tower) throws NotEnoughGoldException {
-        if(tower.getOwner().getGold() < tower.upgradecost) {
+        if(tower.getOwner().getGold() < tower.getUpgradeCost()) {
             throw new NotEnoughGoldException();
         }
-        tower.getOwner().decreaseGold(tower.upgradecost);
+        tower.getOwner().decreaseGold(tower.getUpgradeCost());
         tower.upgrade();
     }
     private Player getOpponentOf(Player p) {
@@ -407,6 +406,10 @@ public class Game {
     }
 
     private boolean isUnitAtOpponentCastle(Unit u) {
+        if(u.getOwnerName().equals("")) {
+            return u.getPosition().equals(getActivePlayer().getCastlePosition()) ||
+                   u.getPosition().equals(getOpponent().getCastlePosition());
+        }
         Player opponent = getOpponentOf(u.getOwner());
         return u.getPosition().equals(opponent.getCastlePosition());
     }
