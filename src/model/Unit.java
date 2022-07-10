@@ -6,10 +6,10 @@ import java.util.Collections;
 /**
  * Base class of units
  */
-public class Unit {
+public abstract class Unit implements Buyable {
     
     private Position position;
-    private Position goalPosition;
+    private final Position goalPosition;
     protected int speed;
     protected int hp;
     private final int maxHp;
@@ -17,7 +17,7 @@ public class Unit {
     public Player owner;
     public int playerId;
     public boolean ignoreObstacle;
-    private int damage;
+    private final int damage;
     public char type;
     
     public Unit(Position pos, Position goalPos, int speed, int hp, int damage) {

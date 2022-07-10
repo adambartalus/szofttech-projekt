@@ -1,5 +1,6 @@
 package view;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import model.Tower;
 
@@ -12,6 +13,9 @@ public class TowerControlButton extends JButton {
     }
     public TowerControlButton(String text) {
         super(text);
+    }
+    public TowerControlButton(String text, Icon icon) {
+        super(text, icon);
     }
     public Tower getTower() {
         return tower;

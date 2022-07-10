@@ -1,30 +1,26 @@
 package model;
 
 
-public abstract class Tower extends Building {
+public abstract class Tower extends Building implements Buyable, Upgradable {
 
     protected int range;
+    protected int level;
     protected int damage;
     protected int rangeinc;
     protected int damageinc;
     protected int goldSpent;
     public boolean aoe;
-    public boolean freeze = false;
+    private boolean frozen = false;
     
     protected Tower(int range, int damage, Position pos, Player player) {
         super(pos, player);
+        this.level = 1;
         this.range = range;
         this.damage = damage;
-        freeze = false;
-        
-        try {
-            int cost = this.getClass().getField("COST").getInt(null);
-            this.goldSpent = cost;
-        } catch(Exception exc) {
-            
-        }
+        this.frozen = false;
+        this.goldSpent = getCost();
     }
-
+    public abstract String getName();
     public int getRange() {
         return range;
     }
@@ -37,26 +33,33 @@ public abstract class Tower extends Building {
         return goldSpent;
     }
     
+    public boolean isFrozen() {
+        return frozen;
+    }
+    @Override
+    public int getLevel() {
+        return level;
+    }
+    @Override
+    public int getMaxLevel() {
+        return 3;
+    }
     
-    public abstract int getCost();
-    
-    public abstract int getUpgradeCost();
-    
+    @Override
     public void upgrade() {
+        if(getLevel() == getMaxLevel()) return;
         range += rangeinc;
         damage += damageinc;
         
-        try {
-            int upgradeCost = this.getClass().getField("UPGRADE_COST").getInt(null);
-            this.goldSpent += upgradeCost;
-        } catch(Exception exc) {
-            
-        }
+        this.goldSpent += getUpgradeCost();
+        level += 1;
     }
-    
+    public void setFrozen(boolean frozen) {
+        this.frozen = frozen;
+    }
     public void turn(Game g) {
-        if(freeze) {
-            freeze = false;
+        if(frozen) {
+            frozen = false;
             return ;
         }
         Unit cUnit;

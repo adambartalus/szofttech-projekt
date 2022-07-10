@@ -2,7 +2,7 @@ package model;
 
 import java.util.ArrayList;
 
-public class MeteorSpell implements Spell {
+public class MeteorSpell extends Spell {
     public static int COST = 500;
     public void Effect(Position pos, Game game, Player player) {
         ArrayList<Position> positions = new ArrayList<Position>();

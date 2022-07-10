@@ -11,4 +11,9 @@ public class StrongUnit extends Unit {
         super(pos, goalPos, 1, 500, 200);
         type = 's';
     }
+
+    @Override
+    public int getCost() {
+        return COST;
+    }
 }

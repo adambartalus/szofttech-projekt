@@ -51,6 +51,8 @@ public class GameArea extends JPanel{
     public static Image meteor;
     public static Image freeze;
     public static Image heal;
+    public static Image upgrade;
+    public static Image demolish;
     
     private Position pointedCell;
     private Position selectedBuildingPos;
@@ -84,6 +86,9 @@ public class GameArea extends JPanel{
             meteor = ResourceLoader.loadImage("res/explosion.png");
             freeze = ResourceLoader.loadImage("res/ice.png");
             heal = ResourceLoader.loadImage("res/heal.png");
+            
+            upgrade = ResourceLoader.loadImage("res/upgrade.png");
+            demolish = ResourceLoader.loadImage("res/demolish.png");
         } catch (IOException ex) {
             Logger.getLogger(GameArea.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -178,7 +183,7 @@ public class GameArea extends JPanel{
                 Game.cellSize,
                 null
             );
-            if(game.getTowerAtPos(p).freeze)
+            if(game.getTowerAtPos(p).isFrozen())
                 g2.drawImage(
                     freeze,
                     p.getY() *Game.cellSize,
@@ -213,7 +218,7 @@ public class GameArea extends JPanel{
                     Game.cellSize,
                     null
                 );
-            if(game.getTowerAtPos(p).freeze)
+            if(game.getTowerAtPos(p).isFrozen())
                 g2.drawImage(
                     freeze,
                     p.getY() *Game.cellSize,

@@ -2,7 +2,7 @@ package model;
 
 import java.util.ArrayList;
 
-public class HealSpell implements Spell {
+public class HealSpell extends Spell {
     public static int COST = 100;
     public void Effect(Position pos, Game game, Player player) {
             for(int j = 0; j < game.getUnitsAtPos(pos).size(); j++)

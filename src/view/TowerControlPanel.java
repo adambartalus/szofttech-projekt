@@ -1,13 +1,16 @@
 package view;
 
-import java.awt.Cursor;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import model.Game;
 import model.NotEnoughGoldException;
 import model.Tower;
@@ -17,34 +20,37 @@ public class TowerControlPanel extends JPanel {
     
     private final TowerControlButton upgradeButton;
     private final TowerControlButton demolishButton;
-    private final JButton cancelButton;
     
     private final GameView gameView;
     
     public TowerControlPanel(GameView gv) {
         this.gameView = gv;
-        upgradeButton = new TowerControlButton("Upgrade");
-        upgradeButton.setMaximumSize(new Dimension(400, 30));
+        upgradeButton = new TowerControlButton(
+                "Upgrade",
+                new ImageIcon(GameArea.upgrade.getScaledInstance(50, 50, 0))
+        );
+        upgradeButton.setMargin(new Insets(0, 0, 0, 0));
+        upgradeButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        upgradeButton.setVerticalTextPosition(SwingConstants.BOTTOM);
         
-        demolishButton = new TowerControlButton("Demolish");
-        demolishButton.setMaximumSize(new Dimension(400, 30));
+        demolishButton = new TowerControlButton(
+            "Demolish",
+            new ImageIcon(GameArea.demolish.getScaledInstance(50, 50, 0))
+        );
+        demolishButton.setMargin(new Insets(0, 0, 0, 0));
+        demolishButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        demolishButton.setVerticalTextPosition(SwingConstants.BOTTOM);
         
-        cancelButton = new JButton("X");
-        cancelButton.setMaximumSize(new Dimension(400, 30));
         
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setAlignmentX(SwingConstants.CENTER);
+        setBorder(BorderFactory.createLineBorder(Color.yellow));
         
         add(upgradeButton);
         add(Box.createRigidArea(new Dimension(5, 0)));
         add(demolishButton);
-        add(Box.createRigidArea(new Dimension(5, 0)));
-        add(cancelButton);
-        
-        setBounds(200, 200, getPreferredSize().width, getPreferredSize().height);
-        
-        setVisible(false);
     }
-    public void setTower(Tower t) {
+    public void update(Tower t) {
         upgradeButton.setTower(t);
         demolishButton.setTower(t);
     }
@@ -60,12 +66,7 @@ public class TowerControlPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.demolishTower(demolishButton.getTower());
-            }
-        });
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                TowerControlPanel.this.setVisible(false);
+                getParent().setVisible(false);
             }
         });
     }

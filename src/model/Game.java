@@ -165,19 +165,15 @@ public class Game {
      * @throws java.lang.Exception
      */
     public void addUnit(Unit u) throws Exception {
-        Field costField;
-        int cost;
-        costField = u.getClass().getField("COST");
-        cost = costField.getInt(null);
         
-        if(players[activePlayerIndex].getGold() < cost) {
+        if(getActivePlayer().getGold() < u.getCost()) {
             throw new NotEnoughGoldException();
         }
-        u.owner = players[activePlayerIndex];
+        u.owner = getActivePlayer();
     	u.findPath(createCollisionMapWithoutCastles());
         this.units.add(u);
-        players[activePlayerIndex].addUnit(u);
-        players[activePlayerIndex].decreaseGold(cost);
+        getActivePlayer().addUnit(u);
+        getActivePlayer().decreaseGold(u.getCost());
     }
     public void addTower(Tower t) {
         towers.add(t);

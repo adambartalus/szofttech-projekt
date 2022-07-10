@@ -11,9 +11,13 @@ public class LongRangeTower extends Tower {
         damageinc = 10;
         rangeinc = 2;
         type = 'l';
-        freeze = false;
     }
 
+    @Override
+    public String getName() {
+        return "Long range tower";
+    }
+    
     @Override
     public int getCost() {
         return COST;

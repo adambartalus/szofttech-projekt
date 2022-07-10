@@ -22,6 +22,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -46,7 +49,6 @@ import model.UnitInfoTableModel;
 public class GameView {
     
     private final String MAIN_CONTROL_PANEL = "MCP";
-    private final String TOWER_CONTROL_PANEL = "TCP";
     
     private final JFrame frame;
     private final JPanel cards;
@@ -67,12 +69,10 @@ public class GameView {
     
     private final JPanel mainControlPanel;
     private final TowerButtonPanel towerButtonPanel;
-    
     private final SpellPanel spellPanel;
     
-    private final TowerControlPanel towerControlPanel;
-    
-    private CastlePanel castlePanel;
+    private final TowerPanel towerPanel;
+    private final CastlePanel castlePanel;
     private Position[] castlePanelPositions;
     
     private final JPanel statPanel;
@@ -83,7 +83,7 @@ public class GameView {
     private final JPanel errorPanel;
     private final JLabel errorLabel;
     
-    Class chosenTower;
+    
     private Spell selectedSpell;
     
     private boolean goldMineSelected = false;
@@ -91,7 +91,9 @@ public class GameView {
     
     private final int FPS = 60;
     private final Timer timer;
+    
     Icon chosenBuildingImage;
+    Class chosenTower;
     
     
     public GameView() {
@@ -101,7 +103,7 @@ public class GameView {
         cards = new JPanel(cardLayout);
         
         castlePanel = new CastlePanel(this);
-        towerControlPanel = new TowerControlPanel(this);
+        towerPanel = new TowerPanel(this);
         
         mainMenu = new MainMenu();
         gameSettings = new GameSettings(this);
@@ -113,13 +115,15 @@ public class GameView {
                 frame.pack();
             }
         });
-        mainMenu.addExitButtonActionListener((ActionEvent e) -> {
-            System.exit(0);
+        mainMenu.addExitButtonActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
         });
         
         layeredPane = new JLayeredPane();
 
-        
         gamePanel = new JPanel();
         gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.X_AXIS));
         
@@ -146,7 +150,7 @@ public class GameView {
         
         layeredPane.add(gameArea, new Integer(0));
         layeredPane.add(castlePanel, new Integer(1));
-        layeredPane.add(towerControlPanel, new Integer(1));
+        layeredPane.add(towerPanel, new Integer(1));
         
         unitInfoTable = new JTable() {
             @Override
@@ -180,12 +184,11 @@ public class GameView {
         });
         unitInfoPanel.add(cancelButton, BorderLayout.EAST);
         
-        spellPanel = new SpellPanel(this);
-        
         activeControlPanel = new JPanel(new CardLayout());
         activeControlPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         towerButtonPanel = new TowerButtonPanel(this);
+        spellPanel = new SpellPanel(this);
         
         gameArea.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -203,6 +206,7 @@ public class GameView {
             public void mousePressed(MouseEvent e) {
                 if(SwingUtilities.isRightMouseButton(e)) {
                     chosenTower = null;
+                    selectedSpell = null;
                     chosenBuildingImage = null;
                     gameArea.setChosenBuildingImage(null);
                     gameArea.setPointedCell(null);
@@ -210,6 +214,7 @@ public class GameView {
                     return;
                 }
                 hideCastlePanel();
+                hideTowerPanel();
                 Position pos = getPositionFromPoint(e.getPoint());
                 updateUnitInfoPanel(pos);
                 if(selectedSpell !=null) {
@@ -234,8 +239,8 @@ public class GameView {
                     }
                     Tower t = game.getTowerAtPos(pos);
                     if(null != t && t.getOwner() == game.getActivePlayer()) {
-                        towerControlPanel.setTower(t);
-                        displayTowerControlPanel();
+                        towerPanel.update(t);
+                        displayTowerPanel();
                     } else if(null == t && null == game.getGoldmineAtPos(pos)) { // listing units at the position
                         if(pos.equals(game.getActivePlayer().getCastlePosition())) {
                             displayCastlePanel(pos);
@@ -254,11 +259,15 @@ public class GameView {
                 }
             }
         });
-        JButton gMine = new JButton("Goldmine (" + Goldmine.COST + "g)" );
+        JButton gMine = new JButton(
+            Goldmine.COST + "g",
+            new ImageIcon(GameArea.mine_blue.getScaledInstance(50, 50, 0))
+        );
+        gMine.setVerticalTextPosition(SwingConstants.BOTTOM);
+        gMine.setHorizontalTextPosition(SwingConstants.CENTER);
         gMine.addActionListener(new ActionListener() {
             private final Icon mine_blue = new ImageIcon(GameArea.mine_blue.getScaledInstance(50, 50, 0));
             private final Icon mine_red = new ImageIcon(GameArea.mine_red.getScaledInstance(50, 50, 0));
-            
             
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -299,13 +308,9 @@ public class GameView {
         mainControlPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         mainControlPanel.add(turnButton);
         
-        // towerControlPanel.setBorder(BorderFactory.createLineBorder(Color.yellow));
-        // towerPanel.setBorder(BorderFactory.createLineBorder(Color.yellow));
-        
         activeControlPanel.add(mainControlPanel, MAIN_CONTROL_PANEL);
         ((CardLayout)(activeControlPanel.getLayout())).show(activeControlPanel, MAIN_CONTROL_PANEL);
         
-        //gamePanel.add(statPanel, BorderLayout.NORTH);
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.add(layeredPane);
@@ -358,6 +363,8 @@ public class GameView {
         frame.add(main);
         cardLayout.show(cards, "Menu");
         
+        setJMenuBar();
+        
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.pack();
@@ -366,6 +373,29 @@ public class GameView {
         timer = new GameTimer(1000.0 / FPS);
         
         frame.setVisible(true);
+    }
+    private void setJMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu gameMenu = new JMenu("Game");
+        JMenuItem newGameMenuItem = new JMenuItem("New Game");
+        JMenuItem restartGameMenuItem = new JMenuItem("Restart");
+        restartGameMenuItem.setEnabled(false);
+        
+        newGameMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cards, "Settings");
+                restartGameMenuItem.setEnabled(false);
+                frame.pack();
+            }
+        });
+        
+        gameMenu.add(newGameMenuItem);
+        gameMenu.add(restartGameMenuItem);
+        
+        menuBar.add(gameMenu);
+        
+        frame.setJMenuBar(menuBar);
     }
     private void initCastlePanel() {
         castlePanelPositions = new Position[2];
@@ -402,8 +432,9 @@ public class GameView {
         }
         castlePanelPositions[1] = new Position(x, y);
     }
-    private void displayTowerControlPanel() {
-        towerControlPanel.setVisible(true);
+    private void displayTowerPanel() {
+        towerPanel.setBounds(200, 200, towerPanel.getPreferredSize().width, towerPanel.getPreferredSize().height);
+        towerPanel.setVisible(true);
     }
     void updateUnitInfoPanel(Position pos) {
         unitInfoTable.setModel(new UnitInfoTableModel(game.getUnitsAtPos(pos)));
@@ -430,6 +461,9 @@ public class GameView {
     private void hideUnitInfoPanel() {
         unitInfoPanel.setVisible(false);
         frame.pack();
+    }
+    private void hideTowerPanel() {
+        towerPanel.setVisible(false);
     }
     private void hideErrorMessage() {
         errorPanel.setVisible(false);
@@ -465,7 +499,7 @@ public class GameView {
         game = new Game(new Dimension(row, col), player1, player2);
         
         castlePanel.initGame(game);
-        towerControlPanel.initGame(game);
+        towerPanel.initGame(game);
         initCastlePanel();
         
         gameArea.setGame(game);
@@ -477,6 +511,7 @@ public class GameView {
         hideErrorMessage();
         frame.pack();
         frame.setLocationRelativeTo(null);
+        frame.getJMenuBar().getMenu(0).getMenuComponent(1).setEnabled(true);
         timer.restart();
     }
     private Position getPositionFromPoint(Point p) {

@@ -42,7 +42,7 @@ public class GameSettings extends JPanel {
         JLabel p2 = new JLabel("Player 2: ");
         
         JButton startGameButton = new JButton("Start Game");
-        startGameButton.setMaximumSize(new Dimension(1000, 30));
+        startGameButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         startGameButton.setBorder(null);
         startGameButton.addActionListener((ActionEvent e) -> {
             gv.startNewGame();

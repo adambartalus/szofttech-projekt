@@ -1,6 +1,6 @@
 package model;
 
-public class Goldmine extends Building {
+public class Goldmine extends Building implements Buyable {
     public static final int COST = 1500;
     private int yield = 200;
     
@@ -9,5 +9,10 @@ public class Goldmine extends Building {
     }
     public void turn() {
         this.owner.increaseGold(yield);
+    }
+
+    @Override
+    public int getCost() {
+        return COST;
     }
 }

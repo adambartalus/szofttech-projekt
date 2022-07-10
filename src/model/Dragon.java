@@ -12,4 +12,10 @@ public class Dragon extends Unit {
         ignoreObstacle = true;
         type = 'o';
     }
+
+    @Override
+    public int getCost() {
+        return COST;
+    }
+    
 }

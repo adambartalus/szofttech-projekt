@@ -11,9 +11,13 @@ public class BasicTower extends Tower {
         damageinc = 10;
         rangeinc = 1;
         type = 'b';
-        freeze = false;
     }
-
+    
+    @Override
+    public String getName() {
+        return "Basic tower";
+    }
+    
     @Override
     public int getCost() {
         return COST;

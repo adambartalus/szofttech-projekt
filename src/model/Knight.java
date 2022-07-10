@@ -11,4 +11,9 @@ public class Knight extends Unit {
         super(pos, goalPos, 2, 300, 150);
         type = 'f';
     }
+
+    @Override
+    public int getCost() {
+        return COST;
+    }
 }

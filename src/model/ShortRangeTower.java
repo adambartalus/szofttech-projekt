@@ -11,9 +11,11 @@ public class ShortRangeTower extends Tower {
         damageinc = 30;
         rangeinc = 0;
         type = 's';
-        freeze = false;
     }
-
+    @Override
+    public String getName() {
+        return "Short range tower";
+    }
     @Override
     public int getCost() {
         return COST;
