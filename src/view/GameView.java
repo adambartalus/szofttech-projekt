@@ -230,33 +230,31 @@ public class GameView {
                     } catch(NotAvailableBuildingPositionException exc) {
                         displayErrorMessage("You can't build there!");
                     }
-                    gameArea.setPointedCell(null);
                     return;
                 }
-                if(null == chosenTower) {
-                    gameArea.setSelectedBuildingPos(pos);
-                    if(!unitInfoPanel.isVisible()) {
-                        displayUnitInfoPanel(pos);
-                    }
-                    Tower t = game.getTowerAtPos(pos);
-                    if(null != t && t.getOwner() == game.getActivePlayer()) {
-                        towerPanel.update(t);
-                        displayTowerPanel(pos);
-                    } else if(null == t && null == game.getGoldmineAtPos(pos)) { // listing units at the position
-                        if(pos.equals(game.getActivePlayer().getCastlePosition())) {
-                            displayCastlePanel(pos);
-                        }
+                if(null != chosenTower) {
+                    try{
+                        game.buildTower(chosenTower, pos);
+                    } catch(NotEnoughGoldException exc) {
+                        displayErrorMessage("You don't have enough gold!");
+                    } catch(NotAvailableBuildingPositionException exc) {
+                        displayErrorMessage("You can't build there!");
+                    } catch(Exception exc) {
+                        displayErrorMessage("Error");
                     }
                     return ;
                 }
-                try{
-                    game.buildTower(chosenTower, pos);
-                } catch(NotEnoughGoldException exc) {
-                    displayErrorMessage("You don't have enough gold!");
-                } catch(NotAvailableBuildingPositionException exc) {
-                    displayErrorMessage("You can't build there!");
-                } catch(Exception exc) {
-                    displayErrorMessage("Error");
+                gameArea.setSelectedBuildingPos(pos);
+                if(!unitInfoPanel.isVisible()) {
+                    displayUnitInfoPanel(pos);
+                }
+                Tower t = game.getTowerAtPos(pos);
+                if(null != t && t.getOwner() == game.getActivePlayer()) {
+                    towerPanel.update(t);
+                    displayTowerPanel(pos);
+                }
+                if(pos.equals(game.getActivePlayer().getCastlePosition())) {
+                    displayCastlePanel(pos);
                 }
             }
         });
@@ -269,7 +267,7 @@ public class GameView {
         gMine.addActionListener(new ActionListener() {
             private final Icon mine_blue = new ImageIcon(GameArea.mine_blue.getScaledInstance(50, 50, 0));
             private final Icon mine_red = new ImageIcon(GameArea.mine_red.getScaledInstance(50, 50, 0));
-            
+            private boolean blue = true;
             @Override
             public void actionPerformed(ActionEvent e) {
                 goldMineSelected = true;
@@ -285,8 +283,12 @@ public class GameView {
         turnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                game.turn();
                 hideCastlePanel();
+                hideTowerPanel();
+              
+                game.turn();
+                if(unitInfoPanel.isVisible())
+                    updateUnitInfoPanel(gameArea.getSelectedFieldPos());
                 towerButtonPanel.updateButtonIcons();
                 castlePanel.updateButtonIcons();
                 if(game.isGameOver()) {
@@ -547,9 +549,6 @@ public class GameView {
         activePlayerLabel.setForeground(color);
         activePlayerGoldLabel.setText(player.getGold() + " g");
         activePlayerHpLabel.setText(player.getCastleHp() + " hp");
-    }
-    private void setActiveControlPanel(String s) {
-        ((CardLayout)(activeControlPanel.getLayout())).show(activeControlPanel, s);
     }
 
     void setSelectedSpell(Spell spell) {

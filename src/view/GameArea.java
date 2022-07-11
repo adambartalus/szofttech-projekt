@@ -55,7 +55,7 @@ public class GameArea extends JPanel{
     public static Image demolish;
     
     private Position pointedCell;
-    private Position selectedBuildingPos;
+    private Position selectedFieldPos;
     
     private Icon chosenBuildingImage;
     private Point chosenBuildingImagePos;
@@ -116,11 +116,14 @@ public class GameArea extends JPanel{
                 (int)d.getWidth() * Game.cellSize)
         );
     }
+    public Position getSelectedFieldPos() {
+        return new Position(selectedFieldPos);
+    }
     public void setPointedCell(Position p) {
         this.pointedCell = p;
     }
     public void setSelectedBuildingPos(Position p) {
-        this.selectedBuildingPos = p;
+        this.selectedFieldPos = p;
     }
     /**
      * Paints the game state
@@ -333,11 +336,10 @@ public class GameArea extends JPanel{
         }
         
         //outline for selected cell
-        if(null != selectedBuildingPos) {
+        if(null != selectedFieldPos) {
             g2.setColor(Color.YELLOW);
-            g2.drawRect(
-                selectedBuildingPos.getY() * Game.cellSize,
-                selectedBuildingPos.getX() * Game.cellSize,
+            g2.drawRect(selectedFieldPos.getY() * Game.cellSize,
+                selectedFieldPos.getX() * Game.cellSize,
                 Game.cellSize,
                 Game.cellSize
             );

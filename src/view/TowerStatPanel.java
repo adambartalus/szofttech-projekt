@@ -1,8 +1,10 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -31,6 +33,7 @@ public class TowerStatPanel extends JPanel {
         levelLabel = new JLabel();
         levelLabel.setMaximumSize(new Dimension(1000, 30));
         levelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        levelLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.black));
         
         damageLabel = new JLabel();
         damageLabel.setMaximumSize(new Dimension(1000, 30));
