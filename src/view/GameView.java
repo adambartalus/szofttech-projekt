@@ -35,12 +35,12 @@ import javax.swing.Timer;
 import javax.swing.table.TableCellRenderer;
 import model.Game;
 import model.Goldmine;
-import model.NotAvailableBuildingPositionException;
-import model.NotEnoughGoldException;
+import exception.NotAvailableBuildingPositionException;
+import exception.NotEnoughGoldException;
 import model.Player;
 import model.Position;
-import model.Spell;
-import model.Tower;
+import model.spell.Spell;
+import model.tower.Tower;
 import model.UnitInfoTableModel;
 
 /**
@@ -158,9 +158,9 @@ public class GameView {
             {
                 Component c = super.prepareRenderer(renderer, row, column);
                 c.setBackground(getBackground());
-                if (getModel().getValueAt(row, 0).equals(game.getPlayer(1).getName())) {
+                if (getModel().getValueAt(row, 3).equals(game.getPlayer(1).getName())) {
                    c.setBackground(Color.red);
-                } else if(getModel().getValueAt(row, 0).equals(game.getPlayer(0).getName())) {
+                } else if(getModel().getValueAt(row, 3).equals(game.getPlayer(0).getName())) {
                    c.setBackground(Color.blue);
                 }
                 
@@ -173,6 +173,7 @@ public class GameView {
         unitInfoPanel.setLayout(new BorderLayout(0,5));
         unitInfoPanel.setPreferredSize(new Dimension(0, 100));
         unitInfoPanel.add(unitScrollPane, BorderLayout.CENTER);
+        unitInfoPanel.setBorder(BorderFactory.createTitledBorder("Units on the field"));
         
         JButton cancelButton = new JButton("X");
         cancelButton.addActionListener(new ActionListener() {
@@ -240,7 +241,7 @@ public class GameView {
                     Tower t = game.getTowerAtPos(pos);
                     if(null != t && t.getOwner() == game.getActivePlayer()) {
                         towerPanel.update(t);
-                        displayTowerPanel();
+                        displayTowerPanel(pos);
                     } else if(null == t && null == game.getGoldmineAtPos(pos)) { // listing units at the position
                         if(pos.equals(game.getActivePlayer().getCastlePosition())) {
                             displayCastlePanel(pos);
@@ -287,6 +288,7 @@ public class GameView {
                 game.turn();
                 hideCastlePanel();
                 towerButtonPanel.updateButtonIcons();
+                castlePanel.updateButtonIcons();
                 if(game.isGameOver()) {
                     JOptionPane.showMessageDialog(gamePanel, game.getWinner().getName() + " Wins", "Game Over",JOptionPane.PLAIN_MESSAGE);
                 }
@@ -432,8 +434,23 @@ public class GameView {
         }
         castlePanelPositions[1] = new Position(x, y);
     }
-    private void displayTowerPanel() {
-        towerPanel.setBounds(200, 200, towerPanel.getPreferredSize().width, towerPanel.getPreferredSize().height);
+    private void displayTowerPanel(Position pos) {
+        int x = (pos.getY() + 1) * Game.cellSize;
+        int y = (pos.getX() + 1) * Game.cellSize;
+        int width = towerPanel.getPreferredSize().width;
+        int height = towerPanel.getPreferredSize().height;
+        if(x + width > game.getMapDimension().height * Game.cellSize) {
+            x = x - Game.cellSize - width;
+        }
+        if(y + height > game.getMapDimension().width * Game.cellSize) {
+            y = y - Game.cellSize - height;
+        }
+        towerPanel.setBounds(
+            x,
+            y,
+            width,
+            height
+        );
         towerPanel.setVisible(true);
     }
     void updateUnitInfoPanel(Position pos) {

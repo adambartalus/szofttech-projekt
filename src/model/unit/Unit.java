@@ -1,23 +1,31 @@
-package model;
+package model.unit;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import model.Buyable;
+import model.Node;
+import model.Player;
+import model.Position;
 
 /**
  * Base class of units
  */
 public abstract class Unit implements Buyable {
     
+    protected int hp;
+    private final int damage;
+    protected int speed;
+    
     private Position position;
     private final Position goalPosition;
-    protected int speed;
-    protected int hp;
-    private final int maxHp;
     public ArrayList<Position> path;
+    
+    private final int maxHp;
+    
     public Player owner;
     public int playerId;
     public boolean ignoreObstacle;
-    private final int damage;
+    
     public char type;
     
     public Unit(Position pos, Position goalPos, int speed, int hp, int damage) {
@@ -52,6 +60,7 @@ public abstract class Unit implements Buyable {
     public int getDamage() {
         return damage;
     }
+    public abstract String getName();
     public boolean isDead() {
         return hp <= 0;
     }
@@ -91,7 +100,7 @@ public abstract class Unit implements Buyable {
     public void findPath(int[][] collisionMap) {
     	Position goal = goalPosition;
     	//Initializes node lists
-    	path = new ArrayList<Position>();
+    	path = new ArrayList<>();
     	ArrayList<Node> openNodes = new ArrayList<>();
     	ArrayList<Node> closedNodes = new ArrayList<>();
     	//Initializes start and end nodes

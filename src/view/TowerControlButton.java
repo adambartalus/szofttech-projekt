@@ -2,7 +2,7 @@ package view;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
-import model.Tower;
+import model.tower.Tower;
 
 
 public class TowerControlButton extends JButton {

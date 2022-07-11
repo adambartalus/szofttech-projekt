@@ -1,4 +1,6 @@
-package model;
+package model.unit;
+
+import model.Position;
 
 /**
  * Faster unit
@@ -15,5 +17,9 @@ public class Knight extends Unit {
     @Override
     public int getCost() {
         return COST;
+    }
+    @Override
+    public String getName() {
+        return "Knight";
     }
 }

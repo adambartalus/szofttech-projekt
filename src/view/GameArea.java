@@ -13,11 +13,11 @@ import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.JPanel;
 
-import model.ActiveSpell;
+import model.spell.ActiveSpell;
 import model.Game;
 import model.Position;
 import model.TowerShot;
-import model.Unit;
+import model.unit.Unit;
 import res.ResourceLoader;
 
 /**

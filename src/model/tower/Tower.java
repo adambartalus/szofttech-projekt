@@ -1,4 +1,15 @@
-package model;
+package model.tower;
+
+import exception.MaxLevelReachedException;
+import exception.NotEnoughGoldException;
+import model.Building;
+import model.Buyable;
+import model.Game;
+import model.Player;
+import model.Position;
+import model.TowerShot;
+import model.Upgradable;
+import model.unit.Unit;
 
 
 public abstract class Tower extends Building implements Buyable, Upgradable {
@@ -33,6 +44,10 @@ public abstract class Tower extends Building implements Buyable, Upgradable {
         return goldSpent;
     }
     
+    public int getGoldReturnOnDemolish() {
+        return getGoldSpent() / 2;
+    }
+    
     public boolean isFrozen() {
         return frozen;
     }
@@ -44,15 +59,22 @@ public abstract class Tower extends Building implements Buyable, Upgradable {
     public int getMaxLevel() {
         return 3;
     }
-    
     @Override
-    public void upgrade() {
-        if(getLevel() == getMaxLevel()) return;
+    public void upgradeEffect() {
         range += rangeinc;
         damage += damageinc;
-        
+    }
+    public void upgrade() throws MaxLevelReachedException, NotEnoughGoldException {
+        if(getLevel() == getMaxLevel()) {
+            throw new MaxLevelReachedException();
+        }
+        if(owner.getGold() < getUpgradeCost()) {
+            throw new NotEnoughGoldException();
+        }
+        upgradeEffect();
+        this.owner.decreaseGold(getUpgradeCost());
         this.goldSpent += getUpgradeCost();
-        level += 1;
+        this.level += 1;
     }
     public void setFrozen(boolean frozen) {
         this.frozen = frozen;
@@ -62,9 +84,7 @@ public abstract class Tower extends Building implements Buyable, Upgradable {
             frozen = false;
             return ;
         }
-        Unit cUnit;
-        for(int i = 0; i < g.getUnits().size(); i++) {
-            cUnit = g.getUnits().get(i);
+        for(Unit cUnit : g.getUnits()) {
             if(this.getOwner() != cUnit.owner){
                 int distancex = Math.abs(cUnit.getPosition().getX() - this.getPosition().getX());
                 int distancey = Math.abs(cUnit.getPosition().getY() - this.getPosition().getY());

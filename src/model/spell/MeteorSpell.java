@@ -1,6 +1,10 @@
-package model;
+package model.spell;
 
+import model.unit.Unit;
 import java.util.ArrayList;
+import model.Game;
+import model.Player;
+import model.Position;
 
 public class MeteorSpell extends Spell {
     public static int COST = 500;

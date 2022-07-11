@@ -10,9 +10,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import model.FreezeSpell;
-import model.HealSpell;
-import model.MeteorSpell;
+import model.spell.FreezeSpell;
+import model.spell.HealSpell;
+import model.spell.MeteorSpell;
 
 
 public class SpellPanel extends JPanel {

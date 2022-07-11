@@ -1,4 +1,6 @@
-package model;
+package model.unit;
+
+import model.Position;
 
 /**
  * A type of units that can get through obstacles
@@ -17,5 +19,8 @@ public class Dragon extends Unit {
     public int getCost() {
         return COST;
     }
-    
+    @Override
+    public String getName() {
+        return "Dragon";
+    }
 }

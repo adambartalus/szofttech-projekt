@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,9 +10,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import model.BasicTower;
-import model.LongRangeTower;
-import model.ShortRangeTower;
+import model.tower.BasicTower;
+import model.tower.LongRangeTower;
+import model.tower.ShortRangeTower;
 
 
 public class TowerButtonPanel extends JPanel {

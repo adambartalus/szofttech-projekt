@@ -1,4 +1,7 @@
-package model;
+package model.tower;
+
+import model.Player;
+import model.Position;
 
 
 public class LongRangeTower extends Tower {
@@ -9,7 +12,7 @@ public class LongRangeTower extends Tower {
     public LongRangeTower(Position pos, Player player) {
         super(3, 58, pos, player);
         damageinc = 10;
-        rangeinc = 2;
+        rangeinc = 1;
         type = 'l';
     }
 

@@ -1,5 +1,8 @@
 package model;
 
+import model.tower.Tower;
+import model.unit.Unit;
+
 /**
  * Class for storing a tower shot as a (tower, unit) pair
  */

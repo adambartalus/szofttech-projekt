@@ -1,15 +1,14 @@
 package view;
 
-import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import model.Tower;
+import model.tower.Tower;
 
 public class TowerStatPanel extends JPanel {
     
@@ -44,6 +43,7 @@ public class TowerStatPanel extends JPanel {
         rangeLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setAlignmentX(Component.CENTER_ALIGNMENT);
 
         add(nameLabel);
         add(levelLabel);

@@ -1,4 +1,7 @@
-package model;
+package model.tower;
+
+import model.Player;
+import model.Position;
 
 
 public class BasicTower extends Tower {

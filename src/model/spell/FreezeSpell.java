@@ -1,4 +1,8 @@
-package model;
+package model.spell;
+
+import model.Game;
+import model.Player;
+import model.Position;
 
 public class FreezeSpell extends Spell{
     public static int COST = 100;

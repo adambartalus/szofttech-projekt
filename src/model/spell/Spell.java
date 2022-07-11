@@ -1,4 +1,9 @@
-package model;
+package model.spell;
+
+import model.Buyable;
+import model.Game;
+import model.Player;
+import model.Position;
 
 public abstract class Spell implements Buyable {
 

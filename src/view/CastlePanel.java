@@ -2,12 +2,12 @@ package view;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -15,16 +15,13 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import model.Castle;
-import model.Knight;
+import model.unit.Knight;
 import model.Game;
-import model.NotEnoughGoldException;
-import model.Dragon;
-import model.StrongUnit;
+import exception.NotEnoughGoldException;
+import model.unit.Dragon;
+import model.unit.StrongUnit;
 
-/**
- *
- * @author Adam
- */
+
 public class CastlePanel extends JPanel {
     private final GameView gameView;
     
@@ -33,38 +30,60 @@ public class CastlePanel extends JPanel {
     private final JButton fUnit;
     private final JButton oUnit;
     
-    public JPanel healthBar;
+    public JLayeredPane healthBar;
     private final JLabel hpPercentageLabel;
     private final JLabel hpLabel;
+    private final JLabel hpLabelText;
     
+    private final Icon blueStrongIcon;
+    private final Icon blueKnightIcon;
+    private final Icon blueDragonIcon;
+    private final Icon redStrongIcon;
+    private final Icon redKnightIcon;
+    private final Icon redDragonIcon;
     
+    private boolean blue = true;
     public CastlePanel(GameView gv) {
+        
+        blueStrongIcon = new ImageIcon(GameArea.unit_strong_blue.getScaledInstance(50, 50, 0));
+        blueKnightIcon = new ImageIcon(GameArea.blue_knight.getScaledInstance(50, 50, 0));
+        blueDragonIcon = new ImageIcon(GameArea.blue_dragon.getScaledInstance(50, 50, 0));
+        redStrongIcon = new ImageIcon(GameArea.unit_strong_red.getScaledInstance(50, 50, 0));
+        redKnightIcon = new ImageIcon(GameArea.red_knight.getScaledInstance(50, 50, 0));
+        redDragonIcon = new ImageIcon(GameArea.red_dragon.getScaledInstance(50, 50, 0));
+        
         gameView = gv;
         
-        healthBar = new JPanel();
-        FlowLayout l = (FlowLayout) healthBar.getLayout();
-        l.setAlignment(FlowLayout.LEFT);
-        l.setVgap(0);
-        l.setHgap(0);
+        healthBar = new JLayeredPane();
+        healthBar.setPreferredSize(new Dimension(0, 30));
         unitSpawnPanel = new JPanel();
         unitSpawnPanel.setBorder(null);
         
         hpPercentageLabel = new JLabel("Hp");
+        hpPercentageLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         hpPercentageLabel.setAlignmentX(SwingConstants.LEFT);
         
-        hpLabel = new JLabel("valami");
+        hpLabel = new JLabel();
+        hpLabel.setBounds(2, 2, healthBar.getPreferredSize().width - 4, 26);
         hpLabel.setBackground(Color.red);
         hpLabel.setOpaque(true);
         
-        healthBar.add(hpLabel);
-        healthBar.setBorder(BorderFactory.createLineBorder(Color.black));
-                
+        hpLabelText = new JLabel();
+        hpLabelText.setBounds(65, 5, 100, 20);
+        
+        healthBar.add(hpLabel, new Integer(0));
+        healthBar.add(hpLabelText, new Integer(1));
+        healthBar.setBorder(BorderFactory.createLineBorder(Color.black, 2));
+        
+        JLabel unitLabel = new JLabel("Spawn units");
+        unitLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        unitLabel.setAlignmentX(SwingConstants.LEFT);
         /**
          * Button for spawning strong unit
          */
         sUnit = new JButton(
             StrongUnit.COST + "g",
-            new ImageIcon(GameArea.unit_strong_red.getScaledInstance(50, 50, 0))    
+            blueStrongIcon   
         );
         sUnit.setMargin(new Insets(0, 0, 0, 0));
         sUnit.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -74,7 +93,7 @@ public class CastlePanel extends JPanel {
          */
         fUnit = new JButton(
             Knight.COST + "g",
-            new ImageIcon(GameArea.red_dragon.getScaledInstance(50, 50, 0)) 
+            blueDragonIcon
         );
         fUnit.setMargin(new Insets(0, 0, 0, 0));
         fUnit.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -85,7 +104,7 @@ public class CastlePanel extends JPanel {
          */
         oUnit = new JButton(
                 Dragon.COST + "g",
-                new ImageIcon(GameArea.red_knight.getScaledInstance(50, 50, 0))
+                blueKnightIcon
         );
         oUnit.setMargin(new Insets(0, 0, 0, 0));
         oUnit.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -115,6 +134,7 @@ public class CastlePanel extends JPanel {
         
         add(hpPercentageLabel);
         add(healthBar);
+        add(unitLabel);
         add(unitSpawnPanel);
         
         setVisible(false);
@@ -128,7 +148,8 @@ public class CastlePanel extends JPanel {
                            game.getActivePlayer().getCastlePosition(),
                            game.getOpponent().getCastlePosition()
                         )
-                   ); 
+                   );
+                   gameView.updateUnitInfoPanel(game.getActivePlayer().getCastlePosition());
                 } catch(NotEnoughGoldException exc) {
                     gameView.displayErrorMessage("You don't have enough gold!");
                 } catch(Exception exc) {
@@ -145,6 +166,7 @@ public class CastlePanel extends JPanel {
                             game.getOpponent().getCastlePosition()
                         )
                     );
+                    gameView.updateUnitInfoPanel(game.getActivePlayer().getCastlePosition());
                 } catch(NotEnoughGoldException exc) {
                     gameView.displayErrorMessage("You don't have enough gold!");
                 } catch(Exception exc) {
@@ -161,6 +183,7 @@ public class CastlePanel extends JPanel {
                             game.getOpponent().getCastlePosition()
                         )
                     );
+                    gameView.updateUnitInfoPanel(game.getActivePlayer().getCastlePosition());
                 } catch(NotEnoughGoldException exc) {
                     gameView.displayErrorMessage("You don't have enough gold!");
                 } catch(Exception exc) {
@@ -175,7 +198,19 @@ public class CastlePanel extends JPanel {
                 healthBar.getSize().width * perc / 100,
                 20
         );
-        hpLabel.setText(hp + "/" + Castle.START_HP);
-        hpLabel.setPreferredSize(d);
+        hpLabelText.setText(hp + "/" + Castle.START_HP);
+        hpLabel.setBounds(2, 2, d.width-4, 26);
+    }
+    public void updateButtonIcons() {
+        if(blue) {
+            fUnit.setIcon(redKnightIcon);
+            sUnit.setIcon(redStrongIcon);
+            oUnit.setIcon(redDragonIcon);
+        } else {
+            fUnit.setIcon(blueKnightIcon);
+            sUnit.setIcon(blueStrongIcon);
+            oUnit.setIcon(blueDragonIcon);
+        }
+        blue = !blue;
     }
 }

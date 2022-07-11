@@ -1,14 +1,14 @@
 package spell;
 
 import java.awt.Dimension;
-import model.BasicTower;
-import model.FreezeSpell;
+import model.tower.BasicTower;
+import model.spell.FreezeSpell;
 import model.Game;
-import model.HealSpell;
-import model.MeteorSpell;
+import model.spell.HealSpell;
+import model.spell.MeteorSpell;
 import model.Position;
-import model.StrongUnit;
-import model.Unit;
+import model.unit.StrongUnit;
+import model.unit.Unit;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public class SpellTest {
     public void meteorSpell() {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
-        Unit testunit = new StrongUnit(new Position(3,3)); // 500 hp
+        Unit testunit = new StrongUnit(new Position(3,3), null); // 500 hp
         try {
             game.addUnit(testunit);
         } catch (Exception ex) {
@@ -34,7 +34,7 @@ public class SpellTest {
     public void healSpell() {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
-        Unit testunit = new StrongUnit(new Position(3,3)); // 500 hp
+        Unit testunit = new StrongUnit(new Position(3,3), null); // 500 hp
         try {
             game.addUnit(testunit);
         } catch (Exception ex) {
@@ -51,7 +51,7 @@ public class SpellTest {
     public void freezeSpell() {
         Dimension d = new Dimension (10,15);
         Game game = new Game(d, "Player1", "Player2");
-        Unit testunit = new StrongUnit(new Position(3,3)); // 500 hp
+        Unit testunit = new StrongUnit(new Position(3,3), null); // 500 hp
         try {
             game.addUnit(testunit);
         } catch (Exception ex) {

@@ -1,8 +1,15 @@
 package model;
 
+import exception.MaxLevelReachedException;
+import exception.NotAvailableBuildingPositionException;
+import exception.NotEnoughGoldException;
+import model.tower.Tower;
+import model.spell.Spell;
+import model.spell.ActiveSpell;
+import model.unit.StrongUnit;
+import model.unit.Unit;
 import java.awt.Dimension;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,7 +26,7 @@ public class Game {
     private final ArrayList<Obstacle> obstacles;
     private final ArrayList<Goldmine> goldmines;
     private final Dimension mapDimension;
-    public static boolean[][] map;
+    
     public Player neutral;
     private final ArrayList<TowerShot> towerShots;
     public ArrayList<ActiveSpell> activeSpells;
@@ -49,8 +56,6 @@ public class Game {
         this.activeSpells = new ArrayList<>();
         this.mapDimension = d;
         generateRandomObstacles();
-        map = new boolean[mapDimension.width][mapDimension.height];
-        reloadObstacles();
         neutral = new Player("",null);
     }
     /**
@@ -75,21 +80,7 @@ public class Game {
     public ArrayList<TowerShot> getTowerShots() {
         return towerShots;
     }
-    public void reloadObstacles() {
-    	for(int i = 0; i < mapDimension.width; i++) {
-    		for(int j = 0; j < mapDimension.height; j++) {
-        		map[i][j] = true;
-        	}
-    	}
-    	ArrayList<Position> obstaclePosition = getObstaclePositions();
-    	ArrayList<Position> towerPosition = getTowerPositions();
-    	for(int i = 0; i < obstaclePosition.size(); i++) {
-    		map[obstaclePosition.get(i).getX()][obstaclePosition.get(i).getY()] = false;
-    	}
-    	for(int i = 0; i < towerPosition.size(); i++) {
-    		map[towerPosition.get(i).getX()][towerPosition.get(i).getY()] = false;
-    	}
-    }
+    
     public void nextPlayer() {
         activePlayerIndex = (activePlayerIndex + 1) % 2;
     }
@@ -219,7 +210,7 @@ public class Game {
     public void demolishTower(Tower t) {
         towers.remove(t);
         t.getOwner().removeTower(t);
-        t.getOwner().increaseGold(t.getGoldSpent() / 2);
+        t.getOwner().increaseGold(t.getGoldReturnOnDemolish());
     }
     public Goldmine getGoldmineAtPos(Position pos) {
         for(Goldmine g : goldmines) {
@@ -353,11 +344,8 @@ public class Game {
         
         return cMap;
     }
-    public void upgradeTower(Tower tower) throws NotEnoughGoldException {
-        if(tower.getOwner().getGold() < tower.getUpgradeCost()) {
-            throw new NotEnoughGoldException();
-        }
-        tower.getOwner().decreaseGold(tower.getUpgradeCost());
+    public void upgradeTower(Tower tower)
+            throws NotEnoughGoldException, MaxLevelReachedException {
         tower.upgrade();
     }
     private Player getOpponentOf(Player p) {
@@ -367,7 +355,6 @@ public class Game {
     public void turn() {
         if(gameOver) return;
         
-        reloadObstacles();
         units.forEach(u -> {
             u.step(createCollisionMapWithoutCastles());
             if(isUnitAtOpponentCastle(u)) {
@@ -384,14 +371,15 @@ public class Game {
         units.removeIf(u -> u.isDead());
         nextPlayer();
         goldmineTurn();
-        getActivePlayer().increaseGold(500);
+        getActivePlayer().increaseGold(100);
         if(getActivePlayer().getCastleHp() < 0) {
             gameOver = true;
             winner = getOpponent();
         }
+        int[][] cMap = createCollisionMap();
         for(int i = 0; i < getMapDimension().width; i++) {
             for(int j = 0; j < getMapDimension().height; j++) {
-                    if(rand.nextInt(1000) < 1 && map[i][j]) {
+                    if(rand.nextInt(1000) < 1 && 0 == cMap[i][j]) {
                     Unit newunit = new StrongUnit(new Position(i,j), getActivePlayer().getCastlePosition());
                     newunit.owner = neutral;
                     newunit.findPath(createCollisionMapWithoutCastles());
